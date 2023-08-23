@@ -9,16 +9,15 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"tiktok-backend/cmd/api/handlers"
-	"tiktok-backend/cmd/api/pkg/jwt"
 	"tiktok-backend/cmd/api/rpc"
 	"tiktok-backend/pkg/constants"
 	"tiktok-backend/pkg/errno"
+	"tiktok-backend/pkg/jwt"
 	"tiktok-backend/pkg/tracer"
 )
 
 func Init() {
 	tracer.InitJaeger(constants.ApiServiceName)
-	jwt.InitJwtMiddleware()
 	rpc.InitRPC()
 }
 
@@ -28,6 +27,12 @@ func main() {
 		server.WithHostPorts("127.0.0.1"+constants.ApiServicePort),
 		server.WithHandleMethodNotAllowed(true), // 全局处理 HTTP 404 与 405 请求
 	)
+
+	authMiddleware, err := jwt.NewJwtMiddleware()
+
+	if err != nil {
+		hlog.Fatal("JWT Error:" + err.Error())
+	}
 
 	// 默认的 panic 处理函数
 	r.Use(recovery.Recovery(recovery.WithRecoveryHandler(
@@ -41,11 +46,12 @@ func main() {
 
 	// 不需要token
 	r.GET("/douyin/feed/", handlers.Feed)                      // 视频流
-	r.POST("/douyin/user/login/", jwt.JwtMiddleware.LoginHandler) // 用户登录
+	r.POST("/douyin/user/login/", authMiddleware.LoginHandler) // 用户登录
 	r.POST("/douyin/user/register/", handlers.UserRegister)    // 用户注册
+	r.GET("/douyin/comment/list/", handlers.CommentList)       // 视频评论列表
 
 	douyin := r.Group("/douyin")
-	douyin.Use(jwt.JwtMiddleware.MiddlewareFunc())
+	douyin.Use(authMiddleware.MiddlewareFunc())
 
 	douyin.GET("/user", handlers.UserInfo) // 用户信息
 
@@ -59,7 +65,6 @@ func main() {
 
 	comment := douyin.Group("/comment")
 	comment.POST("/action/", handlers.CommentAction) // 评论
-	comment.GET("/list/", handlers.CommentList)      // 视频评论列表
 
 	relation := douyin.Group("/relation")
 	relation.POST("/action/", handlers.RelationAction)             // 关注

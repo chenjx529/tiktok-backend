@@ -25,7 +25,7 @@
 
 proto3 由于字段为默认值（比如0值、空串、false等），导致输出json对应字段被隐藏
 
-api模块使用HertzJWTMiddleware,如何在注册的时候使用相同jwt，且这个jwt可以通过HertzJWTMiddleware鉴权
+request参数中有token，总感觉哪里怪怪的
 
 
 ## 三、代码运行

@@ -3,7 +3,9 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/cloudwego/kitex/pkg/klog"
 	"tiktok-backend/cmd/user/pack"
+	"tiktok-backend/pkg/jwt"
 
 	"tiktok-backend/cmd/user/dal/db"
 	"tiktok-backend/kitex_gen/user"
@@ -33,6 +35,9 @@ func (s *UserInfoService) UserInfo(req *user.DouyinUserRequest) (*user.User, err
 	user1 := users[0]
 
 	// TODO: 互动部分还没有实现
+
+	claims, _ := jwt.GetclaimsFromTokenStr(req.Token)
+	klog.Info(claims)
 
 	userInfo := pack.UserInfo(user1, false)
 	return userInfo, nil

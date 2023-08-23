@@ -5,7 +5,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
 	"strconv"
-	"tiktok-backend/cmd/api/pkg/jwt"
 	"tiktok-backend/cmd/api/rpc"
 	"tiktok-backend/kitex_gen/user"
 	"tiktok-backend/pkg/errno"
@@ -24,8 +23,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	uid, err := rpc.UserRegister(context.Background(), &registerVar)
-	token := jwt.CreateTokenAddId(uid)
+	uid, token, err := rpc.UserRegister(context.Background(), &registerVar)
 	if err != nil {
 		sendUserRegisterResponse(c, errno.ConvertErr(err), -1, "")
 		return
@@ -45,8 +43,6 @@ func sendUserRegisterResponse(c *app.RequestContext, err error, userId int64, to
 
 // UserInfo get user info
 func UserInfo(ctx context.Context, c *app.RequestContext) {
-	//token_id, ok := c.Get(constants.IdentityKey)
-
 	userIdStr := c.Query("user_id")
 	token := c.DefaultQuery("token", "")
 
