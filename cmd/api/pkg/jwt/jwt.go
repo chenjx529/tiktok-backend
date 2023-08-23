@@ -3,10 +3,10 @@ package jwt
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
+	jwt2 "github.com/golang-jwt/jwt/v4"
 	"github.com/hertz-contrib/jwt"
-	"testing"
+	"net/http"
 	"tiktok-backend/cmd/api/rpc"
 	"tiktok-backend/kitex_gen/user"
 	"tiktok-backend/pkg/constants"
@@ -14,8 +14,10 @@ import (
 	"time"
 )
 
-func TestNewJWT(t *testing.T) {
-	authMiddleware, _ := jwt.New(&jwt.HertzJWTMiddleware{
+var JwtMiddleware *jwt.HertzJWTMiddleware
+
+func InitJwtMiddleware() {
+	authMiddleware, err := jwt.New(&jwt.HertzJWTMiddleware{
 		Key:        []byte(constants.SecretKey),
 		Timeout:    time.Hour,
 		MaxRefresh: time.Hour,
@@ -41,18 +43,16 @@ func TestNewJWT(t *testing.T) {
 			return int64(int(claims[constants.IdentityKey].(float64))) // 在请求上下文中保存 id
 		},
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) { // 设置登录返回消息
-			//userId, err := jwt2.ParseToken(token)
-			//if err != nil {
-			//	panic(err)
-			//}
-			//// 我服了：proto3 由于字段为默认值（比如0值、空串、false等），导致输出json对应字段被隐藏
-			//Err := errno.ConvertErr(errno.Success)
-			//c.JSON(http.StatusOK, map[string]interface{}{
-			//	"status_code": Err.ErrCode,
-			//	"status_msg":  Err.ErrMsg,
-			//	"user_id":     userId,
-			//	"token":      token,
-			//})
+			claims := jwt.ExtractClaims(ctx, c)
+			userId := claims[constants.IdentityKey]
+			// 我服了：proto3 由于字段为默认值（比如0值、空串、false等），导致输出json对应字段被隐藏
+			Err := errno.ConvertErr(errno.Success)
+			c.JSON(http.StatusOK, map[string]interface{}{
+				"status_code": Err.ErrCode,
+				"status_msg":  Err.ErrMsg,
+				"user_id":     userId,
+				"token":      token,
+			})
 		},
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) { // 设置 jwt 授权失败后的响应函数，message从 HTTPStatusMessageFunc 来
 			c.JSON(code, map[string]interface{}{
@@ -76,14 +76,24 @@ func TestNewJWT(t *testing.T) {
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
 	})
+	if err != nil {
+		panic(err)
+	}
+	JwtMiddleware = authMiddleware
+}
 
-	tokenString, _, _ := authMiddleware.TokenGenerator(jwt.MapClaims{
-		constants.IdentityKey: 3,
-	})
+func CreateTokenAddId(uid int64) string {
+	token := jwt2.New(jwt2.GetSigningMethod(JwtMiddleware.SigningAlgorithm))
+	claims := token.Claims.(jwt2.MapClaims)
 
-	fmt.Println(tokenString)
+	expire := JwtMiddleware.TimeFunc().UTC().Add(JwtMiddleware.Timeout)
+	claims["exp"] = expire.Unix()
+	claims["orig_iat"] = JwtMiddleware.TimeFunc().Unix()
+	claims[constants.IdentityKey] = uid
 
-	id, _ := ParseToken(tokenString)
-	fmt.Println(id)
-
+	tokenString, err := token.SignedString(JwtMiddleware.Key)
+	if err != nil {
+		panic(err)
+	}
+	return tokenString
 }

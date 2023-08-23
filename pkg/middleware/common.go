@@ -10,7 +10,7 @@ import (
 
 var _ endpoint.Middleware = CommonMiddleware
 
-// CommonMiddleware common middleware print some rpc info、real request and real response
+// CommonMiddleware common jwt print some rpc info、real request and real response
 // 通用日志
 func CommonMiddleware(next endpoint.Endpoint) endpoint.Endpoint {
 	return func(ctx context.Context, req, resp interface{}) (err error) {

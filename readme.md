@@ -21,7 +21,14 @@
 | relation | /douyin/relation/action/ - 关系操作 <br/> /douyin/relatioin/follow/list/ - 用户关注列表 <br/> /douyin/relation/follower/list/ - 用户粉丝列表 <br/> /douyin/relation/friend/list/ - 用户好友列表 |
 | message  | /douyin/message/chat/ - 聊天记录 <br/> /douyin/message/action/ - 消息操作                                                                                                         |
 
-## 二、代码运行
+## 二、遇到的问题
+
+proto3 由于字段为默认值（比如0值、空串、false等），导致输出json对应字段被隐藏
+
+api模块使用HertzJWTMiddleware,如何在注册的时候使用相同jwt，且这个jwt可以通过HertzJWTMiddleware鉴权
+
+
+## 三、代码运行
 
 ### 1. 更改配置
 
@@ -81,7 +88,15 @@ sh build.sh
 sh output/bootstrap.sh
 ```
 
-### 9. 运行api微服务
+### 9. 运行message微服务
+
+```shell
+cd cmd/message
+sh build.sh
+sh output/bootstrap.sh
+```
+
+### 10. 运行api微服务
 
 ```shell
 cd cmd/api
@@ -89,7 +104,7 @@ chmod +x run.sh
 ./run.sh
 ```
 
-### 10. Jaeger链路追踪
+### 11. Jaeger链路追踪
 
 在浏览器上查看`http://127.0.0.1:16686/`
 

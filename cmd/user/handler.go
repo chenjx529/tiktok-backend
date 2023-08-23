@@ -6,7 +6,6 @@ import (
 	"tiktok-backend/cmd/user/service"
 	"tiktok-backend/kitex_gen/user"
 	"tiktok-backend/pkg/errno"
-	"tiktok-backend/pkg/jwt"
 )
 
 // UserServiceImpl implements the last service interface defined in the IDL.
@@ -46,9 +45,6 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUser
 		return resp, err
 	}
 
-	token, err := jwt.CreateToken(jwt.CustomClaims{
-		Id: userId,
-	})
 	if err != nil {
 		resp = pack.BuildUserRegisterResp(err)
 		return resp, err
@@ -56,7 +52,6 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUser
 
 	resp = pack.BuildUserRegisterResp(errno.Success)
 	resp.UserId = userId
-	resp.Token = token
 	return resp, nil
 }
 

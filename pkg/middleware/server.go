@@ -10,7 +10,7 @@ import (
 
 var _ endpoint.Middleware = ServerMiddleware
 
-// ServerMiddleware server middleware print client address
+// ServerMiddleware server jwt print client address
 // 服务端日志
 func ServerMiddleware(next endpoint.Endpoint) endpoint.Endpoint {
 	return func(ctx context.Context, req, resp interface{}) (err error) {

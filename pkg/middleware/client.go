@@ -10,7 +10,7 @@ import (
 
 var _ endpoint.Middleware = ClientMiddleware
 
-// ClientMiddleware client middleware print server address 、rpc timeout and connection timeout
+// ClientMiddleware client jwt print server address 、rpc timeout and connection timeout
 // 客户端日志
 func ClientMiddleware(next endpoint.Endpoint) endpoint.Endpoint {
 	return func(ctx context.Context, req, resp interface{}) (err error) {
