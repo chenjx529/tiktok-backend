@@ -1,6 +1,8 @@
 package dal
 
-import "tiktok-backend/cmd/user/dal/db"
+import (
+	"tiktok-backend/dal/db"
+)
 
 // Init init dal
 func Init() {

@@ -8,7 +8,7 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 	trace "github.com/kitex-contrib/tracer-opentracing"
 	"net"
-	"tiktok-backend/cmd/user/dal"
+	"tiktok-backend/dal"
 	user "tiktok-backend/kitex_gen/user/userservice"
 	"tiktok-backend/pkg/bound"
 	"tiktok-backend/pkg/constants"

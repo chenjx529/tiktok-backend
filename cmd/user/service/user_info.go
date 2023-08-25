@@ -5,9 +5,9 @@ import (
 	"errors"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"tiktok-backend/cmd/user/pack"
+	"tiktok-backend/dal/db"
 	"tiktok-backend/pkg/jwt"
 
-	"tiktok-backend/cmd/user/dal/db"
 	"tiktok-backend/kitex_gen/user"
 )
 
