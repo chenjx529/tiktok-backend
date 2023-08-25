@@ -65,8 +65,8 @@ func NewJwtMiddleware() (*jwt.HertzJWTMiddleware, error) {
 		},
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) { // 设置 jwt 授权失败后的响应函数，message从 HTTPStatusMessageFunc 来
 			c.JSON(code, map[string]interface{}{
-				"code":    errno.AuthorizationFailedErrCode,
-				"message": message,
+				"status_code":    errno.AuthorizationFailedErrCode,
+				"status_msg": message,
 			})
 		},
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) { // 配合 HertzJWTMiddleware.LoginHandler 使用，登录时触发，用于认证用户的登录信息。
