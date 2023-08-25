@@ -1,7 +1,7 @@
 package pack
 
 import (
-	"tiktok-backend/cmd/user/dal/db"
+	"tiktok-backend/dal/db"
 	"tiktok-backend/kitex_gen/user"
 )
 

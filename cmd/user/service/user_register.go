@@ -5,7 +5,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"tiktok-backend/cmd/user/dal/db"
+	"tiktok-backend/dal/db"
 	"tiktok-backend/kitex_gen/user"
 	"tiktok-backend/pkg/errno"
 )
