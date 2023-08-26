@@ -22,7 +22,7 @@ func (v *Video) TableName() string {
 	return "video"
 }
 
-// QueryVideoByLatestTime query video info by latest create Time
+// QueryVideoByLatestTime 通过LatestTime获取视频，倒序前30个
 func QueryVideoByLatestTime(ctx context.Context, latestTime int64) ([]*Video, error) {
 	var videos []*Video
 	updated_time := time.UnixMilli(latestTime)
@@ -33,11 +33,21 @@ func QueryVideoByLatestTime(ctx context.Context, latestTime int64) ([]*Video, er
 	return videos, nil
 }
 
-// QueryVideoByVideoIds query video info by video ids
-func QueryVideoByVideoIds(ctx context.Context, videoIds []int64) ([]*Video, error) {
+// MQueryVideoByVideoIds 通过视频id获取视频
+func MQueryVideoByVideoIds(ctx context.Context, videoIds []int64) ([]*Video, error) {
 	var videos []*Video
 	if err := DB.WithContext(ctx).Where("id in (?)", videoIds).Find(&videos).Error; err != nil {
 		klog.Error("QueryVideoByVideoIds error " + err.Error())
+		return nil, err
+	}
+	return videos, nil
+}
+
+// QueryVideoByUserId 通过用户id获取视频
+func QueryVideoByUserId(ctx context.Context, userId int64) ([]*Video, error) {
+	var videos []*Video
+	if err := DB.WithContext(ctx).Order("updated_at desc").Where("user_id = ?", userId).Find(&videos).Error; err != nil {
+		klog.Error("QueryVideoByUserId find video error " + err.Error())
 		return nil, err
 	}
 	return videos, nil

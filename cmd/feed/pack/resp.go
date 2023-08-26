@@ -6,21 +6,21 @@ import (
 	"tiktok-backend/pkg/errno"
 )
 
-// BuildFeedResp build baseResp from error
+// BuildFeedResp 发送FeedResponse
 func BuildFeedResp(err error) *feed.DouyinFeedResponse {
 	if err == nil {
-		return FeedResp(errno.Success)
+		return feedResp(errno.Success)
 	}
 
 	e := errno.ErrNo{}
 	if errors.As(err, &e) {
-		return FeedResp(e)
+		return feedResp(e)
 	}
 
 	s := errno.ServiceErr.WithMessage(err.Error())
-	return FeedResp(s)
+	return feedResp(s)
 }
 
-func FeedResp(err errno.ErrNo) *feed.DouyinFeedResponse {
+func feedResp(err errno.ErrNo) *feed.DouyinFeedResponse {
 	return &feed.DouyinFeedResponse{StatusCode: err.ErrCode, StatusMsg: err.ErrMsg}
 }

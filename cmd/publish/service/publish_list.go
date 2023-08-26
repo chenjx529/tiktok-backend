@@ -3,57 +3,52 @@ package service
 import (
 	"context"
 	"sync"
-	"tiktok-backend/cmd/feed/pack"
+	"tiktok-backend/cmd/publish/pack"
 	"tiktok-backend/dal/db"
-	"tiktok-backend/kitex_gen/feed"
+	"tiktok-backend/kitex_gen/publish"
 	"tiktok-backend/pkg/constants"
 	"tiktok-backend/pkg/jwt"
 )
 
-type FeedService struct {
+type PublishListService struct {
 	ctx context.Context
 }
 
-// NewFeedService new FeedService
-func NewFeedService(ctx context.Context) *FeedService {
-	return &FeedService{
+// NewPublishListService new PublishListService
+func NewPublishListService(ctx context.Context) *PublishListService {
+	return &PublishListService{
 		ctx: ctx,
 	}
 }
 
-// Feed 不限制登录状态返回视频流，
-// 难点1：按投稿时间倒序的视频列表，单次最多30个。
-// 难点2：视频是否点赞  is_favorite
-// 难点3：当前用户时候关注  is_follow
-// 这个函数我们使用了多线程，同时获取is_favorite和is_follow
-func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, error) {
+// PublishList implements the PublishServiceImpl interface.
+func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) ([]*publish.Video, error) {
 	// 是否登录
 	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
 	var login_id int64
 	if err != nil {
 		login_id = 0
 	} else {
-		login_id = int64(int(claims[constants.IdentityKey].(float64)))  // 这种写法，我是真的想骂人的
+		login_id = int64(int(claims[constants.IdentityKey].(float64)))
 	}
 
-	// 按投稿时间倒序的视频列表，单次最多30个。
-	videoData, err := db.QueryVideoByLatestTime(s.ctx, req.LatestTime)
+	// 利用用户名查找视频
+	videoData, err := db.QueryVideoByUserId(s.ctx, req.UserId)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	// 获取视频id和用户id
 	videoIds := make([]int64, 0)
-	userIds := make([]int64, 0)
+	userIds := []int64{req.UserId}
 	for _, video := range videoData {
 		videoIds = append(videoIds, int64(video.ID))
-		userIds = append(userIds, video.UserId)
 	}
 
 	// 获取用户信息
 	users, err := db.MQueryUsersByIds(s.ctx, userIds)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 	userMap := make(map[int64]*db.User)
 	for _, user := range users {
@@ -93,13 +88,14 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 
 		wg.Wait()
 		if favoriteErr != nil {
-			return nil, 0, favoriteErr
+			return nil, favoriteErr
 		}
 		if relationErr != nil {
-			return nil, 0, relationErr
+			return nil, relationErr
 		}
 	}
 
-	videoListInfo, nextTime := pack.VideoListInfo(login_id, videoData, userMap, favoriteMap, relationMap)
-	return videoListInfo, nextTime, nil
+	// 封装db数据到response
+	videoListInfo := pack.VideoListInfo(login_id, videoData, userMap, favoriteMap, relationMap)
+	return videoListInfo, nil
 }

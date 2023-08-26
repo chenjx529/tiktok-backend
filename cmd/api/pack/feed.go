@@ -7,7 +7,17 @@ import (
 	"tiktok-backend/pkg/errno"
 )
 
-func UserInfo(kitex_user *feed.User) *User {
+func SendFeedResponse(c *app.RequestContext, err error, videoList []*feed.Video, nextTime int64) {
+	Err := errno.ConvertErr(err)
+	c.JSON(http.StatusOK, FeedResponse{
+		StatusCode: Err.ErrCode,
+		StatusMsg:  Err.ErrMsg,
+		VideoList:  buildFeedVideoListInfo(videoList),
+		NextTime:   nextTime,
+	})
+}
+
+func buildFeedUserInfo(kitex_user *feed.User) *User {
 	return &User{
 		Id:              kitex_user.Id,              // 用户id
 		Name:            kitex_user.Name,            // 用户名称
@@ -23,7 +33,7 @@ func UserInfo(kitex_user *feed.User) *User {
 	}
 }
 
-func VideoInfo(kitex_video *feed.Video, author *User) *Video {
+func buildFeedVideoInfo(kitex_video *feed.Video, author *User) *Video {
 	return &Video{
 		Id:            kitex_video.Id,            // 视频唯一标识
 		Author:        author,                    // 视频作者信息
@@ -36,21 +46,11 @@ func VideoInfo(kitex_video *feed.Video, author *User) *Video {
 	}
 }
 
-// VideoListInfo pack video list info
-func VideoListInfo(videoData []*feed.Video) []*Video {
+// buildFeedVideoListInfo pack video list info
+func buildFeedVideoListInfo(videoData []*feed.Video) []*Video {
 	videoList := make([]*Video, 0)
 	for _, video := range videoData {
-		videoList = append(videoList, VideoInfo(video, UserInfo(video.Author)))
+		videoList = append(videoList, buildFeedVideoInfo(video, buildFeedUserInfo(video.Author)))
 	}
 	return videoList
-}
-
-func SendFeedResponse(c *app.RequestContext, err error, videoList []*feed.Video, nextTime int64) {
-	Err := errno.ConvertErr(err)
-	c.JSON(http.StatusOK, FeedResponse{
-		StatusCode: Err.ErrCode,
-		StatusMsg:  Err.ErrMsg,
-		VideoList:  VideoListInfo(videoList),
-		NextTime:   nextTime,
-	})
 }
