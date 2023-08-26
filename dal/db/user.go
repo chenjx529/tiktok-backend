@@ -24,10 +24,20 @@ func (User) TableName() string {
 	return "user"
 }
 
-// QueryUserByIds 根据用户id获取用户信息
-func QueryUserByIds(ctx context.Context, userIds []int64) ([]*User, error) {
+// MQueryUsersByIds multiple get list of user info
+func MQueryUsersByIds(ctx context.Context, userIds []int64) ([]*User, error) {
 	res := make([]*User, 0)
 	if err := DB.WithContext(ctx).Where("id in (?)", userIds).Find(&res).Error; err != nil {
+		klog.Error("query user by ids fail " + err.Error())
+		return nil, err
+	}
+	return res, nil
+}
+
+// QueryUserById 根据用户id获取用户信息
+func QueryUserById(ctx context.Context, userId int64) ([]*User, error) {
+	res := make([]*User, 0)
+	if err := DB.WithContext(ctx).Where("id = ?", userId).Find(&res).Error; err != nil {
 		klog.Error("query user by ids fail " + err.Error())
 		return nil, err
 	}

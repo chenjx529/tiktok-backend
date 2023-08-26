@@ -5,6 +5,8 @@ import (
 	"tiktok-backend/kitex_gen/user"
 )
 
+
+
 func UserInfo(dbuser *db.User, isFollow bool) *user.User {
 	userInfo := &user.User{
 		Id:              int64(dbuser.ID),
