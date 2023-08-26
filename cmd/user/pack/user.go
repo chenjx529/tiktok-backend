@@ -5,21 +5,18 @@ import (
 	"tiktok-backend/kitex_gen/user"
 )
 
-
-
 func UserInfo(dbuser *db.User, isFollow bool) *user.User {
-	userInfo := &user.User{
-		Id:              int64(dbuser.ID),
-		Name:            dbuser.Name,
-		FollowCount:     dbuser.FollowCount,
-		FollowerCount:   dbuser.FollowerCount,
-		IsFollow:        isFollow,  // true-已关注，false-未关注
-		Avatar:          dbuser.Avatar,
-		BackgroundImage: dbuser.BackgroundImage,
-		Signature:       dbuser.Signature,
-		TotalFavorited:  dbuser.TotalFavorited,
-		WorkCount:       dbuser.WorkCount,
-		FavoriteCount:   dbuser.FavoriteCount,
+	return &user.User{
+		Id:              int64(dbuser.ID),       // 用户id
+		Name:            dbuser.Name,            // 用户名称
+		FollowCount:     dbuser.FollowCount,     // 关注总数
+		FollowerCount:   dbuser.FollowerCount,   // 粉丝总数
+		Avatar:          dbuser.Avatar,          // 用户头像
+		BackgroundImage: dbuser.BackgroundImage, // 用户个人页顶部大图
+		Signature:       dbuser.Signature,       // 个人简介
+		TotalFavorited:  dbuser.TotalFavorited,  // 获赞数量
+		WorkCount:       dbuser.WorkCount,       // 作品数量
+		FavoriteCount:   dbuser.FavoriteCount,   // 点赞数量
+		IsFollow:        isFollow,               // true-已关注，false-未关注
 	}
-	return userInfo
 }

@@ -62,10 +62,10 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 
 	// 视频点赞和用户关注
 	var favoriteMap map[int64]*db.Favorite
-	var relationMap map[int64]*db.Relation
+	var followMap map[int64]*db.Follow
 	if login_id == 0 {
 		favoriteMap = nil
-		relationMap = nil
+		followMap = nil
 	} else {
 		var wg sync.WaitGroup
 		wg.Add(2)
@@ -84,7 +84,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		//获取关注信息
 		go func() {
 			defer wg.Done()
-			relationMap, err = db.MQueryRelationByIds(s.ctx, login_id, userIds)
+			followMap, err = db.MQueryFollowByIds(s.ctx, login_id, userIds)
 			if err != nil {
 				relationErr = err
 				return
@@ -100,6 +100,6 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		}
 	}
 
-	videoListInfo, nextTime := pack.VideoListInfo(login_id, videoData, userMap, favoriteMap, relationMap)
+	videoListInfo, nextTime := pack.VideoListInfo(login_id, videoData, userMap, favoriteMap, followMap)
 	return videoListInfo, nextTime, nil
 }
