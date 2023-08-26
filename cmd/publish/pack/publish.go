@@ -2,20 +2,12 @@ package pack
 
 import (
 	"tiktok-backend/dal/db"
-	"tiktok-backend/kitex_gen/feed"
-	"time"
+	"tiktok-backend/kitex_gen/publish"
 )
 
 // VideoListInfo 将db数据封装成feed.Video数据
-func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteMap map[int64]*db.Favorite, relationMap map[int64]*db.Relation) ([]*feed.Video, int64) {
-	var nextTime int64
-	if len(videoData) == 0 {
-		nextTime = time.Now().UnixMilli()
-	} else {
-		nextTime = videoData[len(videoData)-1].UpdatedAt.UnixMilli()
-	}
-
-	videoList := make([]*feed.Video, 0)
+func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteMap map[int64]*db.Favorite, relationMap map[int64]*db.Relation) []*publish.Video {
+	videoList := make([]*publish.Video, 0)
 	for _, video := range videoData {
 		// 视频用户
 		user, _ := userMap[video.UserId]
@@ -37,12 +29,11 @@ func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.U
 		// 格式化
 		videoList = append(videoList, videoInfo(video, userInfo(user, isFollow), isFavorite))
 	}
-
-	return videoList, nextTime
+	return videoList
 }
 
-func userInfo(dbuser *db.User, isFollow bool) *feed.User {
-	return &feed.User{
+func userInfo(dbuser *db.User, isFollow bool) *publish.User {
+	return &publish.User{
 		Id:              int64(dbuser.ID),       // 用户id
 		Name:            dbuser.Name,            // 用户名称
 		FollowCount:     dbuser.FollowCount,     // 关注总数
@@ -57,8 +48,8 @@ func userInfo(dbuser *db.User, isFollow bool) *feed.User {
 	}
 }
 
-func videoInfo(dbvideo *db.Video, author *feed.User, isFavorite bool) *feed.Video {
-	return &feed.Video{
+func videoInfo(dbvideo *db.Video, author *publish.User, isFavorite bool) *publish.Video {
+	return &publish.Video{
 		Id:            int64(dbvideo.ID),     // 视频唯一标识
 		Author:        author,                // 视频作者信息
 		PlayUrl:       dbvideo.PlayUrl,       // 视频播放地址

@@ -56,7 +56,7 @@ func main() {
 	douyin.GET("/user", handlers.UserInfo) // 用户信息
 
 	publish := douyin.Group("/publish")
-	publish.POST("/action/", handlers.PublishActiion) // 视频投稿
+	publish.POST("/action/", handlers.PublishAction) // 视频投稿
 	publish.GET("/list/", handlers.PublishList)       // 发布列表
 
 	favorite := douyin.Group("/favorite")

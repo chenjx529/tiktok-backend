@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+// Feed 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
+// 难点1：按投稿时间倒序的视频列表，单次最多30个。
+// 难点2：视频是否点赞  is_favorite
+// 难点3：当前用户时候关注  is_follow
 func Feed(ctx context.Context, c *app.RequestContext) {
 	token := c.DefaultQuery("token", "")
 	defaultTimeStr := strconv.Itoa(int(time.Now().UnixMilli()))
