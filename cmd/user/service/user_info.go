@@ -25,7 +25,7 @@ func NewUserInfoService(ctx context.Context) *UserInfoService {
 // UserInfo get user info
 func (s *UserInfoService) UserInfo(req *user.DouyinUserRequest) (*user.User, error) {
 	userIds := []int64{req.UserId}
-	users, err := db.QueryUserByIds(s.ctx, userIds)
+	users, err := db.MQueryUsersByIds(s.ctx, userIds)
 	if err != nil {
 		return nil, err
 	}

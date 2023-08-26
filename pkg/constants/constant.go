@@ -35,9 +35,6 @@ const (
 	MySQLMaxIdleConns    = 10        //空闲连接池中连接的最大数量
 	MySQLMaxOpenConns    = 100       //打开数据库连接的最大数量
 	MySQLConnMaxLifetime = time.Hour //连接可复用的最大时间
-)
-
-var (
-	MySQLDefaultDSN = "root:123456@tcp(119.23.67.36:3307)/tiktok?charset=utf8&parseTime=True&loc=Local"
-	EtcdAddress     = "119.23.67.36:2379"
+	MySQLDefaultDSN      = "root:123456@tcp(119.23.67.36:3307)/tiktok?charset=utf8&parseTime=True&loc=Local"
+	EtcdAddress          = "119.23.67.36:2379"
 )
