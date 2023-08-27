@@ -25,7 +25,7 @@ message douyin_message_chat_response {
 message douyin_message_action_request {
   string token = 1; // 用户鉴权token
   int64 to_user_id = 2; // 对方用户id
-  int32 status_code = 3; // 1-发送消息
+  int32 action_type = 3; // 1-发送消息
   string content = 4; // 消息内容
 }
 
@@ -36,5 +36,5 @@ message douyin_message_action_response {
 
 service MessageService {
   rpc MessageChat (douyin_message_chat_request) returns (douyin_message_chat_response) {}
-  rpc MessageActioin (douyin_message_action_request) returns (douyin_message_action_response) {}
+  rpc MessageAction (douyin_message_action_request) returns (douyin_message_action_response) {}
 }

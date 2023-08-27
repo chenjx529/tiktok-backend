@@ -14,8 +14,8 @@ func (s *MessageServiceImpl) MessageChat(ctx context.Context, req *message.Douyi
 	return
 }
 
-// MessageActioin implements the MessageServiceImpl interface.
-func (s *MessageServiceImpl) MessageActioin(ctx context.Context, req *message.DouyinRelationActionRequest) (resp *message.DouyinRelationActionResponse, err error) {
+// MessageAction implements the MessageServiceImpl interface.
+func (s *MessageServiceImpl) MessageAction(ctx context.Context, req *message.DouyinMessageActionRequest) (resp *message.DouyinMessageActionResponse, err error) {
 	// TODO: Your code here...
 	return
 }

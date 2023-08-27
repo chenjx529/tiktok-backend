@@ -218,7 +218,7 @@ func (x *DouyinMessageActionRequest) fastReadField2(buf []byte, _type int8) (off
 }
 
 func (x *DouyinMessageActionRequest) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
+	x.ActionType, offset, err = fastpb.ReadInt32(buf, _type)
 	return offset, err
 }
 
@@ -412,10 +412,10 @@ func (x *DouyinMessageActionRequest) fastWriteField2(buf []byte) (offset int) {
 }
 
 func (x *DouyinMessageActionRequest) fastWriteField3(buf []byte) (offset int) {
-	if x.StatusCode == 0 {
+	if x.ActionType == 0 {
 		return offset
 	}
-	offset += fastpb.WriteInt32(buf[offset:], 3, x.GetStatusCode())
+	offset += fastpb.WriteInt32(buf[offset:], 3, x.GetActionType())
 	return offset
 }
 
@@ -602,10 +602,10 @@ func (x *DouyinMessageActionRequest) sizeField2() (n int) {
 }
 
 func (x *DouyinMessageActionRequest) sizeField3() (n int) {
-	if x.StatusCode == 0 {
+	if x.ActionType == 0 {
 		return n
 	}
-	n += fastpb.SizeInt32(3, x.GetStatusCode())
+	n += fastpb.SizeInt32(3, x.GetActionType())
 	return n
 }
 
@@ -665,7 +665,7 @@ var fieldIDToName_DouyinMessageChatResponse = map[int32]string{
 var fieldIDToName_DouyinMessageActionRequest = map[int32]string{
 	1: "Token",
 	2: "ToUserId",
-	3: "StatusCode",
+	3: "ActionType",
 	4: "Content",
 }
 

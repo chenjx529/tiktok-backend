@@ -21,8 +21,8 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "MessageService"
 	handlerType := (*message.MessageService)(nil)
 	methods := map[string]kitex.MethodInfo{
-		"MessageChat":    kitex.NewMethodInfo(messageChatHandler, newMessageChatArgs, newMessageChatResult, false),
-		"MessageActioin": kitex.NewMethodInfo(messageActioinHandler, newMessageActioinArgs, newMessageActioinResult, false),
+		"MessageChat":   kitex.NewMethodInfo(messageChatHandler, newMessageChatArgs, newMessageChatResult, false),
+		"MessageAction": kitex.NewMethodInfo(messageActionHandler, newMessageActionArgs, newMessageActionResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName":     "message",
@@ -198,7 +198,7 @@ func (p *MessageChatResult) GetResult() interface{} {
 	return p.Success
 }
 
-func messageActioinHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func messageActionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
@@ -206,64 +206,64 @@ func messageActioinHandler(ctx context.Context, handler interface{}, arg, result
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(message.MessageService).MessageActioin(ctx, req)
+		resp, err := handler.(message.MessageService).MessageAction(ctx, req)
 		if err != nil {
 			return err
 		}
 		if err := st.SendMsg(resp); err != nil {
 			return err
 		}
-	case *MessageActioinArgs:
-		success, err := handler.(message.MessageService).MessageActioin(ctx, s.Req)
+	case *MessageActionArgs:
+		success, err := handler.(message.MessageService).MessageAction(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*MessageActioinResult)
+		realResult := result.(*MessageActionResult)
 		realResult.Success = success
 	}
 	return nil
 }
-func newMessageActioinArgs() interface{} {
-	return &MessageActioinArgs{}
+func newMessageActionArgs() interface{} {
+	return &MessageActionArgs{}
 }
 
-func newMessageActioinResult() interface{} {
-	return &MessageActioinResult{}
+func newMessageActionResult() interface{} {
+	return &MessageActionResult{}
 }
 
-type MessageActioinArgs struct {
+type MessageActionArgs struct {
 	Req *message.DouyinMessageActionRequest
 }
 
-func (p *MessageActioinArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *MessageActionArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
 		p.Req = new(message.DouyinMessageActionRequest)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
 
-func (p *MessageActioinArgs) FastWrite(buf []byte) (n int) {
+func (p *MessageActionArgs) FastWrite(buf []byte) (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.FastWrite(buf)
 }
 
-func (p *MessageActioinArgs) Size() (n int) {
+func (p *MessageActionArgs) Size() (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.Size()
 }
 
-func (p *MessageActioinArgs) Marshal(out []byte) ([]byte, error) {
+func (p *MessageActionArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *MessageActioinArgs) Unmarshal(in []byte) error {
+func (p *MessageActionArgs) Unmarshal(in []byte) error {
 	if len(in) == 0 {
 		return nil
 	}
@@ -275,58 +275,58 @@ func (p *MessageActioinArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var MessageActioinArgs_Req_DEFAULT *message.DouyinMessageActionRequest
+var MessageActionArgs_Req_DEFAULT *message.DouyinMessageActionRequest
 
-func (p *MessageActioinArgs) GetReq() *message.DouyinMessageActionRequest {
+func (p *MessageActionArgs) GetReq() *message.DouyinMessageActionRequest {
 	if !p.IsSetReq() {
-		return MessageActioinArgs_Req_DEFAULT
+		return MessageActionArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *MessageActioinArgs) IsSetReq() bool {
+func (p *MessageActionArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MessageActioinArgs) GetFirstArgument() interface{} {
+func (p *MessageActionArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type MessageActioinResult struct {
+type MessageActionResult struct {
 	Success *message.DouyinMessageActionResponse
 }
 
-var MessageActioinResult_Success_DEFAULT *message.DouyinMessageActionResponse
+var MessageActionResult_Success_DEFAULT *message.DouyinMessageActionResponse
 
-func (p *MessageActioinResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *MessageActionResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
 		p.Success = new(message.DouyinMessageActionResponse)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
 
-func (p *MessageActioinResult) FastWrite(buf []byte) (n int) {
+func (p *MessageActionResult) FastWrite(buf []byte) (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.FastWrite(buf)
 }
 
-func (p *MessageActioinResult) Size() (n int) {
+func (p *MessageActionResult) Size() (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.Size()
 }
 
-func (p *MessageActioinResult) Marshal(out []byte) ([]byte, error) {
+func (p *MessageActionResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *MessageActioinResult) Unmarshal(in []byte) error {
+func (p *MessageActionResult) Unmarshal(in []byte) error {
 	if len(in) == 0 {
 		return nil
 	}
@@ -338,22 +338,22 @@ func (p *MessageActioinResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *MessageActioinResult) GetSuccess() *message.DouyinMessageActionResponse {
+func (p *MessageActionResult) GetSuccess() *message.DouyinMessageActionResponse {
 	if !p.IsSetSuccess() {
-		return MessageActioinResult_Success_DEFAULT
+		return MessageActionResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *MessageActioinResult) SetSuccess(x interface{}) {
+func (p *MessageActionResult) SetSuccess(x interface{}) {
 	p.Success = x.(*message.DouyinMessageActionResponse)
 }
 
-func (p *MessageActioinResult) IsSetSuccess() bool {
+func (p *MessageActionResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MessageActioinResult) GetResult() interface{} {
+func (p *MessageActionResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -377,11 +377,11 @@ func (p *kClient) MessageChat(ctx context.Context, Req *message.DouyinMessageCha
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) MessageActioin(ctx context.Context, Req *message.DouyinMessageActionRequest) (r *message.DouyinMessageActionResponse, err error) {
-	var _args MessageActioinArgs
+func (p *kClient) MessageAction(ctx context.Context, Req *message.DouyinMessageActionRequest) (r *message.DouyinMessageActionResponse, err error) {
+	var _args MessageActionArgs
 	_args.Req = Req
-	var _result MessageActioinResult
-	if err = p.c.Call(ctx, "MessageActioin", &_args, &_result); err != nil {
+	var _result MessageActionResult
+	if err = p.c.Call(ctx, "MessageAction", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

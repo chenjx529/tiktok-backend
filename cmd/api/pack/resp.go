@@ -41,6 +41,14 @@ type Video struct {
 	Title         string `json:"title"`          // 视频标题
 }
 
+type Message struct {
+	Id         int64  `json:"id"`           // 消息id
+	ToUserId   int64  `json:"to_user_id"`   // 该消息接收者的id
+	FromUserId int64  `json:"from_user_id"` // 该消息发送者的id
+	Content    string `json:"content"`      // 消息内容
+	CreateTime string `json:"create_time"`  // 消息创建时间
+}
+
 type UserRegisterResponse struct {
 	StatusCode int32  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
@@ -93,4 +101,15 @@ type RelationFriendListResponse struct {
 	StatusCode int32         `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string        `json:"status_msg"`  // 返回状态描述
 	UserList   []*FriendUser `json:"user_list"`   // 用户列表
+}
+
+type MessageChatResponse struct {
+	StatusCode  int32      `json:"status_code"`  // 状态码，0-成功，其他值-失败
+	StatusMsg   string     `json:"status_msg"`   // 返回状态描述
+	MessageList []*Message `json:"message_list"` // 消息列表
+}
+
+type MessageActionResponse struct {
+	StatusCode int32  `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string `json:"status_msg"`  // 返回状态描述
 }

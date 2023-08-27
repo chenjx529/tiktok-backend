@@ -9,6 +9,7 @@ import (
 	"tiktok-backend/kitex_gen/message"
 	"tiktok-backend/kitex_gen/message/messageservice"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/errno"
 	"tiktok-backend/pkg/middleware"
 	"time"
 )
@@ -38,12 +39,26 @@ func initMessageRpc() {
 	messageClient = c
 }
 
-// MessageChat 当前登录用户和其他指定用户的聊天消息记录
-func MessageChat(ctx context.Context, req *message.DouyinMessageChatRequest) {
-
+// MessageAction 登录用户对消息的相关操作，目前只支持消息发送
+func MessageAction(ctx context.Context, req *message.DouyinMessageActionRequest) error {
+	resp, err := messageClient.MessageAction(ctx, req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 0 {
+		return errno.NewErrNo(resp.StatusCode, resp.StatusMsg)
+	}
+	return nil
 }
 
-// MessageAction 登录用户对消息的相关操作，目前只支持消息发送
-func MessageAction(ctx context.Context, req *message.DouyinMessageActionRequest) {
-
+// MessageChat 当前登录用户和其他指定用户的聊天消息记录
+func MessageChat(ctx context.Context, req *message.DouyinMessageChatRequest) ([]*message.Message, error) {
+	resp, err := messageClient.MessageChat(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 0 {
+		return nil, errno.NewErrNo(resp.StatusCode, resp.StatusMsg)
+	}
+	return resp.MessageList, nil
 }
