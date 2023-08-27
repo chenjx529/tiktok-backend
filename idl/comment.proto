@@ -32,7 +32,7 @@ message douyin_comment_action_response {
 
 message Comment {
   int64 id = 1; // 视频评论id
-  User user =2; // 评论用户信息
+  User user = 2; // 评论用户信息
   string content = 3; // 评论内容
   string create_date = 4; // 评论发布日期，格式 mm-dd
 }

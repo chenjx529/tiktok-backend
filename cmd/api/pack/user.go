@@ -19,10 +19,14 @@ func SendUserRegisterResponse(c *app.RequestContext, err error, userId int64, to
 
 func SendUserInfoResponse(c *app.RequestContext, err error, userinfo *user.User) {
 	Err := errno.ConvertErr(err)
+	var tmp *User
+	if userinfo != nil {
+		tmp = buildUserInfo(userinfo)
+	}
 	c.JSON(http.StatusOK, UserInfoResponse{
 		StatusCode: Err.ErrCode,
 		StatusMsg:  Err.ErrMsg,
-		User:       buildUserInfo(userinfo),
+		User:       tmp,
 	})
 }
 

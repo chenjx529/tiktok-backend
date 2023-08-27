@@ -43,13 +43,13 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUser
 	userId, err := service.NewUserRegisterService(ctx).UserRegister(req)
 	if err != nil {
 		resp = pack.BuildUserRegisterResp(err)
-		return resp, err
+		return resp, nil
 	}
 
 	token, err := jwt.CreateTokenAddId(userId)
 	if err != nil {
 		resp = pack.BuildUserRegisterResp(err)
-		return resp, err
+		return resp, nil
 	}
 
 	resp = pack.BuildUserRegisterResp(errno.Success)
@@ -65,7 +65,7 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.DouyinUserRequ
 	userinfo, err := service.NewUserInfoService(ctx).UserInfo(req)
 	if err != nil {
 		resp = pack.BuildUserInfoResp(err)
-		return resp, err
+		return resp, nil
 	}
 
 	resp = pack.BuildUserInfoResp(errno.Success)

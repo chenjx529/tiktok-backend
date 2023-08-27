@@ -56,11 +56,11 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 	}
 
 	// 视频点赞和用户关注
-	var favoriteMap map[int64]*db.Favorite
-	var relationMap map[int64]*db.Relation
+	var favoriteSet map[int64]struct{}
+	var followSet map[int64]struct{}
 	if login_id == 0 {
-		favoriteMap = nil
-		relationMap = nil
+		favoriteSet = nil
+		followSet = nil
 	} else {
 		var wg sync.WaitGroup
 		wg.Add(2)
@@ -69,7 +69,7 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 		//获取点赞信息
 		go func() {
 			defer wg.Done()
-			favoriteMap, err = db.MQueryFavoriteByIds(s.ctx, login_id, videoIds)
+			favoriteSet, err = db.MQueryFavoriteByIds(s.ctx, login_id, videoIds)
 			if err != nil {
 				favoriteErr = err
 				return
@@ -79,7 +79,7 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 		//获取关注信息
 		go func() {
 			defer wg.Done()
-			relationMap, err = db.MQueryRelationByIds(s.ctx, login_id, userIds)
+			followSet, err = db.MQueryFollowByUserIdAndToUserIds(s.ctx, login_id, userIds)
 			if err != nil {
 				relationErr = err
 				return
@@ -96,6 +96,6 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 	}
 
 	// 封装db数据到response
-	videoListInfo := pack.VideoListInfo(login_id, videoData, userMap, favoriteMap, relationMap)
+	videoListInfo := pack.VideoListInfo(login_id, videoData, userMap, favoriteSet, followSet)
 	return videoListInfo, nil
 }

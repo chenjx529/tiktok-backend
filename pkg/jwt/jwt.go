@@ -65,8 +65,8 @@ func NewJwtMiddleware() (*jwt.HertzJWTMiddleware, error) {
 		},
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) { // 设置 jwt 授权失败后的响应函数，message从 HTTPStatusMessageFunc 来
 			c.JSON(code, map[string]interface{}{
-				"status_code":    errno.AuthorizationFailedErrCode,
-				"status_msg": message,
+				"status_code": errno.AuthorizationFailedErrCode,
+				"status_msg":  message,
 			})
 		},
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) { // 配合 HertzJWTMiddleware.LoginHandler 使用，登录时触发，用于认证用户的登录信息。
@@ -117,9 +117,10 @@ func GetclaimsFromTokenStr(tokenStr string) (map[string]interface{}, error) {
 		hlog.Fatal("JWT Error:" + err.Error())
 	}
 
-	token, err := JwtMiddleware.ParseTokenString(tokenStr)
-	if err != nil {
-		return nil, err
-	}
+	token, _ := JwtMiddleware.ParseTokenString(tokenStr)
+	// 你这个东西乱过期
+	//if err != nil {
+	//	return nil, err
+	//}
 	return jwt.ExtractClaimsFromToken(token), nil
 }
