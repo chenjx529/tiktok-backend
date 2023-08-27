@@ -97,8 +97,8 @@ func MQueryFollowByUserIdAndToUserIds(ctx context.Context, userId int64, toUserI
 		return nil, err
 	}
 	followSet := make(map[int64]struct{})
-	for _, relation := range follows {
-		followSet[relation.ToUserId] = constants.BlankStruct{} // 表示当前用户userId关注了ToUserId
+	for _, follow := range follows {
+		followSet[follow.ToUserId] = constants.BlankStruct{} // 表示当前用户userId关注了ToUserId
 	}
 	return followSet, nil
 }

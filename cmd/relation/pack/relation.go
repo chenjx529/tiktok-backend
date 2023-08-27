@@ -52,13 +52,16 @@ func BuildFriendUserList(relationUserList []*db.User, followSet map[int64]struct
 }
 
 func buildFriendUserInfo(dbuser *db.User, isFollow bool, message *db.Message) *relation.FriendUser {
+	var content string
 	var msgType int64
-	if int64(dbuser.ID) == message.ToUserId {
-		msgType = 1 // 好友是接受方，自己就是发送方
-	} else {
-		msgType = 0
+	if message != nil {
+		content = message.Content
+		if int64(dbuser.ID) == message.ToUserId {
+			msgType = 1 // 好友是接受方，自己就是发送方
+		} else {
+			msgType = 0
+		}
 	}
-
 	return &relation.FriendUser{
 		Id:              int64(dbuser.ID),       // 用户id
 		Name:            dbuser.Name,            // 用户名称
@@ -71,7 +74,7 @@ func buildFriendUserInfo(dbuser *db.User, isFollow bool, message *db.Message) *r
 		WorkCount:       dbuser.WorkCount,       // 作品数量
 		FavoriteCount:   dbuser.FavoriteCount,   // 点赞数量
 		IsFollow:        isFollow,               // true-已关注，false-未关注
-		Message:         message.Content,        // 和该好友的最新聊天消息
+		Message:         content,                // 和该好友的最新聊天消息
 		MsgType:         msgType,                // message消息的类型，0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
 	}
 }

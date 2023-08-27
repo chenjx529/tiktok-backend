@@ -53,11 +53,13 @@ func (s *RelationFriendListService) RelationFriendList(req *relation.DouyinRelat
 	// 这里需要一个meesageMap  map[friend_id]*meesage
 	messageMap := make(map[int64]*db.Message)
 	for _, friend := range friends {
-		message, err := db.QueryMessageById(s.ctx, friend.MessageId)
-		if err != nil {
-			return nil, err
+		if friend.MessageId != 0 {
+			message, err := db.QueryMessageById(s.ctx, friend.MessageId)
+			if err != nil {
+				return nil, err
+			}
+			messageMap[friend.UserId] = message[0]
 		}
-		messageMap[friend.UserId] = message[0]
 	}
 
 	// 封装relation.FriendUser

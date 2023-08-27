@@ -39,6 +39,17 @@ int64(int(claims[constants.IdentityKey].(float64)))  这种写法我蚌埠住了
 
 请求如果是json数据的话，好像只能使用GetRawData
 
+查询某一个用户的粉丝，这个粉丝的是否被当前登录用户关注，逻辑有点乱呀
+
+默认赋值
+int 0
+float 0.000000
+string ""
+指针 nil
+数组 []
+
+结构体内部默认赋值就是基础类型赋值
+
 ## 三、代码运行
 
 ### 1. 更改配置
