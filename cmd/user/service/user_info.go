@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/cloudwego/kitex/pkg/klog"
 	"tiktok-backend/cmd/user/pack"
 	"tiktok-backend/dal/db"
+	"tiktok-backend/pkg/constants"
 	"tiktok-backend/pkg/jwt"
 
 	"tiktok-backend/kitex_gen/user"
@@ -24,8 +24,14 @@ func NewUserInfoService(ctx context.Context) *UserInfoService {
 
 // UserInfo get user info
 func (s *UserInfoService) UserInfo(req *user.DouyinUserRequest) (*user.User, error) {
-	userIds := []int64{req.UserId}
-	users, err := db.MQueryUsersByIds(s.ctx, userIds)
+	// 登录
+	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	if err != nil {
+		return nil, err
+	}
+	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+
+	users, err := db.MQueryUsersByIds(s.ctx, []int64{req.UserId})
 	if err != nil {
 		return nil, err
 	}
@@ -34,11 +40,18 @@ func (s *UserInfoService) UserInfo(req *user.DouyinUserRequest) (*user.User, err
 	}
 	user1 := users[0]
 
-	// TODO: 互动部分还没有实现
+	// TODO: 是否关注
+	followSet, err := db.MQueryFollowByUserIdAndToUserIds(s.ctx, loginId, []int64{req.UserId})
+	if err != nil {
+		return nil, err
+	}
 
-	claims, _ := jwt.GetclaimsFromTokenStr(req.Token)
-	klog.Info(claims)
+	// 之前没有关注过
+	isFollow := false
+	if _, ok := followSet[req.UserId]; ok {
+		isFollow = true
+	}
 
-	userInfo := pack.UserInfo(user1, false)
+	userInfo := pack.UserInfo(user1, isFollow)
 	return userInfo, nil
 }

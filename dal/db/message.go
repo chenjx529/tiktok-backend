@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+	"github.com/cloudwego/kitex/pkg/klog"
 	"gorm.io/gorm"
 )
 
@@ -14,4 +16,15 @@ type Message struct {
 
 func (Message) TableName() string {
 	return "message"
+}
+
+
+// QueryMessageById 根据当前用户userId获取关注用户id
+func QueryMessageById(ctx context.Context, userId int64) ([]*Message, error) {
+	res := make([]*Message, 0)
+	if err := DB.WithContext(ctx).Where("id = ?", userId).Find(&res).Error; err != nil {
+		klog.Error("query Message by id fail " + err.Error())
+		return nil, err
+	}
+	return res, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"gorm.io/gorm"
+	"tiktok-backend/pkg/constants"
 )
 
 // Favorite Gorm Data Structures
@@ -18,15 +19,15 @@ func (Favorite) TableName() string {
 }
 
 // MQueryFavoriteByIds 根据当前用户id和视频id获取点赞信息
-func MQueryFavoriteByIds(ctx context.Context, currentId int64, videoIds []int64) (map[int64]*Favorite, error) {
-	var favorites []*Favorite
-	if err := DB.WithContext(ctx).Where("user_id = ? AND video_id IN ?", currentId, videoIds).Find(&favorites).Error; err != nil {
+func MQueryFavoriteByIds(ctx context.Context, currentId int64, videoIds []int64) (map[int64]struct{}, error) {
+	res := make([]*Favorite, 0)
+	if err := DB.WithContext(ctx).Where("user_id = ? AND video_id IN ?", currentId, videoIds).Find(&res).Error; err != nil {
 		klog.Error("quert favorite record fail " + err.Error())
 		return nil, err
 	}
-	favoriteMap := make(map[int64]*Favorite)
-	for _, favorite := range favorites {
-		favoriteMap[favorite.VideoId] = favorite
+	favoriteMap := make(map[int64]struct{})
+	for _, favorite := range res {
+		favoriteMap[favorite.VideoId] = constants.BlankStruct{}  // 表示当前用户点赞了这个VideoId视频
 	}
 	return favoriteMap, nil
 }

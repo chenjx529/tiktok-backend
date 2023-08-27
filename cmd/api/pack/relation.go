@@ -43,12 +43,12 @@ func SendRelationFriendListResponse(c *app.RequestContext, err error, userList [
 }
 
 // buildRelationFollowList pack video list info
-func buildRelationFollowList(userList []*relation.User) []*User {
-	videoList := make([]*User, 0)
-	for _, user := range userList {
-		videoList = append(videoList, buildRelationUserInfo(user))
+func buildRelationFollowList(relationUserList []*relation.User) []*User {
+	userList := make([]*User, 0)
+	for _, v := range relationUserList {
+		userList = append(userList, buildRelationUserInfo(v))
 	}
-	return videoList
+	return userList
 }
 
 func buildRelationUserInfo(kitex_user *relation.User) *User {

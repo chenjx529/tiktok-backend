@@ -7,7 +7,7 @@ import (
 )
 
 // VideoListInfo 将db数据封装成feed.Video数据
-func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteMap map[int64]*db.Favorite, followMap map[int64]*db.Follow) ([]*feed.Video, int64) {
+func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) ([]*feed.Video, int64) {
 	var nextTime int64
 	if len(videoData) == 0 {
 		nextTime = time.Now().UnixMilli()
@@ -24,11 +24,11 @@ func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.U
 		isFollow := false
 		isFavorite := false
 		if loginId != 0 {
-			_, ok := favoriteMap[int64(video.ID)]
+			_, ok := favoriteSet[int64(video.ID)]
 			if ok {
 				isFavorite = true
 			}
-			_, ok = followMap[video.UserId]
+			_, ok = followSet[video.UserId]
 			if ok {
 				isFollow = true
 			}

@@ -2,6 +2,8 @@ package constants
 
 import "time"
 
+type BlankStruct struct{}
+
 const (
 	// jwt
 	SecretKey   = "secret key"
@@ -29,7 +31,6 @@ const (
 
 	// limit
 	CPURateLimit = 80.0
-	DefaultLimit = 10
 
 	// MySQL
 	MySQLMaxIdleConns    = 10        //空闲连接池中连接的最大数量
@@ -37,4 +38,8 @@ const (
 	MySQLConnMaxLifetime = time.Hour //连接可复用的最大时间
 	MySQLDefaultDSN      = "root:123456@tcp(119.23.67.36:3307)/tiktok?charset=utf8&parseTime=True&loc=Local"
 	EtcdAddress          = "119.23.67.36:2379"
+
+	// 关注
+	Follow   = 1 // 关注
+	UnFollow = 2 //取消关注
 )
