@@ -202,7 +202,7 @@ func messageActioinHandler(ctx context.Context, handler interface{}, arg, result
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(message.DouyinRelationActionRequest)
+		req := new(message.DouyinMessageActionRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
@@ -232,12 +232,12 @@ func newMessageActioinResult() interface{} {
 }
 
 type MessageActioinArgs struct {
-	Req *message.DouyinRelationActionRequest
+	Req *message.DouyinMessageActionRequest
 }
 
 func (p *MessageActioinArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
-		p.Req = new(message.DouyinRelationActionRequest)
+		p.Req = new(message.DouyinMessageActionRequest)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
@@ -267,7 +267,7 @@ func (p *MessageActioinArgs) Unmarshal(in []byte) error {
 	if len(in) == 0 {
 		return nil
 	}
-	msg := new(message.DouyinRelationActionRequest)
+	msg := new(message.DouyinMessageActionRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -275,9 +275,9 @@ func (p *MessageActioinArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var MessageActioinArgs_Req_DEFAULT *message.DouyinRelationActionRequest
+var MessageActioinArgs_Req_DEFAULT *message.DouyinMessageActionRequest
 
-func (p *MessageActioinArgs) GetReq() *message.DouyinRelationActionRequest {
+func (p *MessageActioinArgs) GetReq() *message.DouyinMessageActionRequest {
 	if !p.IsSetReq() {
 		return MessageActioinArgs_Req_DEFAULT
 	}
@@ -293,14 +293,14 @@ func (p *MessageActioinArgs) GetFirstArgument() interface{} {
 }
 
 type MessageActioinResult struct {
-	Success *message.DouyinRelationActionResponse
+	Success *message.DouyinMessageActionResponse
 }
 
-var MessageActioinResult_Success_DEFAULT *message.DouyinRelationActionResponse
+var MessageActioinResult_Success_DEFAULT *message.DouyinMessageActionResponse
 
 func (p *MessageActioinResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
-		p.Success = new(message.DouyinRelationActionResponse)
+		p.Success = new(message.DouyinMessageActionResponse)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
@@ -330,7 +330,7 @@ func (p *MessageActioinResult) Unmarshal(in []byte) error {
 	if len(in) == 0 {
 		return nil
 	}
-	msg := new(message.DouyinRelationActionResponse)
+	msg := new(message.DouyinMessageActionResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -338,7 +338,7 @@ func (p *MessageActioinResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *MessageActioinResult) GetSuccess() *message.DouyinRelationActionResponse {
+func (p *MessageActioinResult) GetSuccess() *message.DouyinMessageActionResponse {
 	if !p.IsSetSuccess() {
 		return MessageActioinResult_Success_DEFAULT
 	}
@@ -346,7 +346,7 @@ func (p *MessageActioinResult) GetSuccess() *message.DouyinRelationActionRespons
 }
 
 func (p *MessageActioinResult) SetSuccess(x interface{}) {
-	p.Success = x.(*message.DouyinRelationActionResponse)
+	p.Success = x.(*message.DouyinMessageActionResponse)
 }
 
 func (p *MessageActioinResult) IsSetSuccess() bool {
@@ -377,7 +377,7 @@ func (p *kClient) MessageChat(ctx context.Context, Req *message.DouyinMessageCha
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) MessageActioin(ctx context.Context, Req *message.DouyinRelationActionRequest) (r *message.DouyinRelationActionResponse, err error) {
+func (p *kClient) MessageActioin(ctx context.Context, Req *message.DouyinMessageActionRequest) (r *message.DouyinMessageActionResponse, err error) {
 	var _args MessageActioinArgs
 	_args.Req = Req
 	var _result MessageActioinResult
