@@ -172,7 +172,7 @@ func (x *DouyinMessageChatResponse) fastReadField3(buf []byte, _type int8) (offs
 	return offset, nil
 }
 
-func (x *DouyinRelationActionRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *DouyinMessageActionRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
@@ -204,30 +204,30 @@ func (x *DouyinRelationActionRequest) FastRead(buf []byte, _type int8, number in
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinRelationActionRequest[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinMessageActionRequest[number], err)
 }
 
-func (x *DouyinRelationActionRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+func (x *DouyinMessageActionRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.Token, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *DouyinRelationActionRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+func (x *DouyinMessageActionRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	x.ToUserId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
-func (x *DouyinRelationActionRequest) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
+func (x *DouyinMessageActionRequest) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.ActionType, offset, err = fastpb.ReadInt32(buf, _type)
 	return offset, err
 }
 
-func (x *DouyinRelationActionRequest) fastReadField4(buf []byte, _type int8) (offset int, err error) {
+func (x *DouyinMessageActionRequest) fastReadField4(buf []byte, _type int8) (offset int, err error) {
 	x.Content, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *DouyinRelationActionResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *DouyinMessageActionResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
@@ -249,15 +249,15 @@ func (x *DouyinRelationActionResponse) FastRead(buf []byte, _type int8, number i
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinRelationActionResponse[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinMessageActionResponse[number], err)
 }
 
-func (x *DouyinRelationActionResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+func (x *DouyinMessageActionResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
 	return offset, err
 }
 
-func (x *DouyinRelationActionResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+func (x *DouyinMessageActionResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	x.StatusMsg, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
@@ -384,7 +384,7 @@ func (x *DouyinMessageChatResponse) fastWriteField3(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *DouyinRelationActionRequest) FastWrite(buf []byte) (offset int) {
+func (x *DouyinMessageActionRequest) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
@@ -395,7 +395,7 @@ func (x *DouyinRelationActionRequest) FastWrite(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *DouyinRelationActionRequest) fastWriteField1(buf []byte) (offset int) {
+func (x *DouyinMessageActionRequest) fastWriteField1(buf []byte) (offset int) {
 	if x.Token == "" {
 		return offset
 	}
@@ -403,7 +403,7 @@ func (x *DouyinRelationActionRequest) fastWriteField1(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *DouyinRelationActionRequest) fastWriteField2(buf []byte) (offset int) {
+func (x *DouyinMessageActionRequest) fastWriteField2(buf []byte) (offset int) {
 	if x.ToUserId == 0 {
 		return offset
 	}
@@ -411,15 +411,15 @@ func (x *DouyinRelationActionRequest) fastWriteField2(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *DouyinRelationActionRequest) fastWriteField3(buf []byte) (offset int) {
-	if x.StatusCode == 0 {
+func (x *DouyinMessageActionRequest) fastWriteField3(buf []byte) (offset int) {
+	if x.ActionType == 0 {
 		return offset
 	}
-	offset += fastpb.WriteInt32(buf[offset:], 3, x.GetStatusCode())
+	offset += fastpb.WriteInt32(buf[offset:], 3, x.GetActionType())
 	return offset
 }
 
-func (x *DouyinRelationActionRequest) fastWriteField4(buf []byte) (offset int) {
+func (x *DouyinMessageActionRequest) fastWriteField4(buf []byte) (offset int) {
 	if x.Content == "" {
 		return offset
 	}
@@ -427,7 +427,7 @@ func (x *DouyinRelationActionRequest) fastWriteField4(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *DouyinRelationActionResponse) FastWrite(buf []byte) (offset int) {
+func (x *DouyinMessageActionResponse) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
@@ -436,7 +436,7 @@ func (x *DouyinRelationActionResponse) FastWrite(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *DouyinRelationActionResponse) fastWriteField1(buf []byte) (offset int) {
+func (x *DouyinMessageActionResponse) fastWriteField1(buf []byte) (offset int) {
 	if x.StatusCode == 0 {
 		return offset
 	}
@@ -444,7 +444,7 @@ func (x *DouyinRelationActionResponse) fastWriteField1(buf []byte) (offset int) 
 	return offset
 }
 
-func (x *DouyinRelationActionResponse) fastWriteField2(buf []byte) (offset int) {
+func (x *DouyinMessageActionResponse) fastWriteField2(buf []byte) (offset int) {
 	if x.StatusMsg == "" {
 		return offset
 	}
@@ -574,7 +574,7 @@ func (x *DouyinMessageChatResponse) sizeField3() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionRequest) Size() (n int) {
+func (x *DouyinMessageActionRequest) Size() (n int) {
 	if x == nil {
 		return n
 	}
@@ -585,7 +585,7 @@ func (x *DouyinRelationActionRequest) Size() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionRequest) sizeField1() (n int) {
+func (x *DouyinMessageActionRequest) sizeField1() (n int) {
 	if x.Token == "" {
 		return n
 	}
@@ -593,7 +593,7 @@ func (x *DouyinRelationActionRequest) sizeField1() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionRequest) sizeField2() (n int) {
+func (x *DouyinMessageActionRequest) sizeField2() (n int) {
 	if x.ToUserId == 0 {
 		return n
 	}
@@ -601,15 +601,15 @@ func (x *DouyinRelationActionRequest) sizeField2() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionRequest) sizeField3() (n int) {
-	if x.StatusCode == 0 {
+func (x *DouyinMessageActionRequest) sizeField3() (n int) {
+	if x.ActionType == 0 {
 		return n
 	}
-	n += fastpb.SizeInt32(3, x.GetStatusCode())
+	n += fastpb.SizeInt32(3, x.GetActionType())
 	return n
 }
 
-func (x *DouyinRelationActionRequest) sizeField4() (n int) {
+func (x *DouyinMessageActionRequest) sizeField4() (n int) {
 	if x.Content == "" {
 		return n
 	}
@@ -617,7 +617,7 @@ func (x *DouyinRelationActionRequest) sizeField4() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionResponse) Size() (n int) {
+func (x *DouyinMessageActionResponse) Size() (n int) {
 	if x == nil {
 		return n
 	}
@@ -626,7 +626,7 @@ func (x *DouyinRelationActionResponse) Size() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionResponse) sizeField1() (n int) {
+func (x *DouyinMessageActionResponse) sizeField1() (n int) {
 	if x.StatusCode == 0 {
 		return n
 	}
@@ -634,7 +634,7 @@ func (x *DouyinRelationActionResponse) sizeField1() (n int) {
 	return n
 }
 
-func (x *DouyinRelationActionResponse) sizeField2() (n int) {
+func (x *DouyinMessageActionResponse) sizeField2() (n int) {
 	if x.StatusMsg == "" {
 		return n
 	}
@@ -662,14 +662,14 @@ var fieldIDToName_DouyinMessageChatResponse = map[int32]string{
 	3: "MessageList",
 }
 
-var fieldIDToName_DouyinRelationActionRequest = map[int32]string{
+var fieldIDToName_DouyinMessageActionRequest = map[int32]string{
 	1: "Token",
 	2: "ToUserId",
-	3: "StatusCode",
+	3: "ActionType",
 	4: "Content",
 }
 
-var fieldIDToName_DouyinRelationActionResponse = map[int32]string{
+var fieldIDToName_DouyinMessageActionResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
 }

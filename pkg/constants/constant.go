@@ -42,4 +42,7 @@ const (
 	// 关注
 	Follow   = 1 // 关注
 	UnFollow = 2 //取消关注
+
+	// time
+	TimeFormat = "2006-01-02 15:04:05"
 )

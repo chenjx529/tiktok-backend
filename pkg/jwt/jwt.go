@@ -70,16 +70,22 @@ func NewJwtMiddleware() (*jwt.HertzJWTMiddleware, error) {
 			})
 		},
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) { // 配合 HertzJWTMiddleware.LoginHandler 使用，登录时触发，用于认证用户的登录信息。
-			var loginVar user.DouyinUserLoginRequest
-			if err := c.Bind(&loginVar); err != nil {
+			//var loginVar user.DouyinUserLoginRequest
+			//if err := c.Bind(&loginVar); err != nil {
+			//	return "", jwt.ErrMissingLoginValues
+			//}
+
+			userName := c.Query("username")
+			passWord := c.Query("password")
+
+			if len(userName) == 0 || len(passWord) == 0 {
 				return "", jwt.ErrMissingLoginValues
 			}
 
-			if len(loginVar.Username) == 0 || len(loginVar.Password) == 0 {
-				return "", jwt.ErrMissingLoginValues
-			}
-
-			return rpc.UserLogin(context.Background(), &loginVar)
+			return rpc.UserLogin(context.Background(), &user.DouyinUserLoginRequest{
+				Username: userName,
+				Password: passWord,
+			})
 		},
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
 		TokenHeadName: "Bearer",

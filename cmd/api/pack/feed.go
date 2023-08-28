@@ -17,6 +17,15 @@ func SendFeedResponse(c *app.RequestContext, err error, videoList []*feed.Video,
 	})
 }
 
+// buildFeedVideoListInfo pack video list info
+func buildFeedVideoListInfo(videoData []*feed.Video) []*Video {
+	videoList := make([]*Video, 0)
+	for _, video := range videoData {
+		videoList = append(videoList, buildFeedVideoInfo(video, buildFeedUserInfo(video.Author)))
+	}
+	return videoList
+}
+
 func buildFeedUserInfo(kitex_user *feed.User) *User {
 	return &User{
 		Id:              kitex_user.Id,              // 用户id
@@ -44,13 +53,4 @@ func buildFeedVideoInfo(kitex_video *feed.Video, author *User) *Video {
 		Title:         kitex_video.Title,         // 视频标题
 		IsFavorite:    kitex_video.IsFavorite,    // true-已点赞，false-未点赞
 	}
-}
-
-// buildFeedVideoListInfo pack video list info
-func buildFeedVideoListInfo(videoData []*feed.Video) []*Video {
-	videoList := make([]*Video, 0)
-	for _, video := range videoData {
-		videoList = append(videoList, buildFeedVideoInfo(video, buildFeedUserInfo(video.Author)))
-	}
-	return videoList
 }

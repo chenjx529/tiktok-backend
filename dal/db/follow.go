@@ -18,11 +18,11 @@ func (Follow) TableName() string {
 	return "follow"
 }
 
-// Create 创建关注记录
+// CreateFollow 创建关注记录
 // 增加当前用户的关注总数
 // 增加其他用户的粉丝总数
 // 这里需要写上事务
-func Create(ctx context.Context, userId int64, toUserId int64) error {
+func CreateFollow(ctx context.Context, userId int64, toUserId int64) error {
 	follow := &Follow{
 		UserId:   userId,
 		ToUserId: toUserId,
@@ -54,10 +54,10 @@ func Create(ctx context.Context, userId int64, toUserId int64) error {
 	return nil
 }
 
-// Delete 删除关注记录
+// DeleteFollow 删除关注记录
 // 减少当前用户的关注总数
 // 减少其他用户的粉丝总数
-func Delete(ctx context.Context, userId int64, toUserId int64) error {
+func DeleteFollow(ctx context.Context, userId int64, toUserId int64) error {
 	follow := &Follow{
 		UserId:   userId,
 		ToUserId: toUserId,

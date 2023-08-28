@@ -22,7 +22,7 @@ func Init() {
 }
 
 func main() {
-	r, err := etcd.NewEtcdRegistry([]string{constants.EtcdAddress}) //r should not be reused.
+	r, err := etcd.NewEtcdRegistry([]string{constants.EtcdAddress}) // r should not be reused.
 	if err != nil {
 		panic(err)
 	}

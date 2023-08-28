@@ -18,8 +18,18 @@ func (Message) TableName() string {
 	return "message"
 }
 
+// QueryMessageByUserId 根据当前用户userId获取关注用户id
+func QueryMessageByUserId(ctx context.Context, fromUserId int64, toUserId int64) ([]*Message, error) {
+	res := make([]*Message, 0)
+	querySql := "(to_user_id = ? and from_user_id = ?) or (to_user_id = ? and from_user_id = ?)"
+	if err := DB.WithContext(ctx).Order("created_at desc").Where(querySql, toUserId, fromUserId, fromUserId, toUserId).Find(&res).Error; err != nil {
+		klog.Error("query Message by userId fail " + err.Error())
+		return nil, err
+	}
+	return res, nil
+}
 
-// QueryMessageById 根据当前用户userId获取关注用户id
+// QueryMessageById 根据id查找
 func QueryMessageById(ctx context.Context, userId int64) ([]*Message, error) {
 	res := make([]*Message, 0)
 	if err := DB.WithContext(ctx).Where("id = ?", userId).Find(&res).Error; err != nil {
@@ -27,4 +37,13 @@ func QueryMessageById(ctx context.Context, userId int64) ([]*Message, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+// CreateMessage 新建一条聊天记录
+func CreateMessage(ctx context.Context, mes *Message) (int64, error) {
+	if err := DB.WithContext(ctx).Create(mes).Error; err != nil {
+		klog.Error("create user fail " + err.Error())
+		return 0, err
+	}
+	return int64(mes.ID), nil
 }

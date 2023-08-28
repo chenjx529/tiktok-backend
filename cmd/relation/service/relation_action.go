@@ -49,7 +49,7 @@ func (s *RelationActionService) RelationAction(req *relation.DouyinRelationActio
 
 		// 之前没有关注过
 		if _, ok := followSet[req.ToUserId]; !ok {
-			err := db.Create(s.ctx, loginId, req.ToUserId)
+			err := db.CreateFollow(s.ctx, loginId, req.ToUserId)
 			if err != nil {
 				return err
 			}
@@ -66,7 +66,7 @@ func (s *RelationActionService) RelationAction(req *relation.DouyinRelationActio
 			return err
 		}
 		if _, ok := followSet[req.ToUserId]; ok {
-			err := db.Delete(s.ctx, loginId, req.ToUserId)
+			err := db.DeleteFollow(s.ctx, loginId, req.ToUserId)
 			if err != nil {
 				return err
 			}
