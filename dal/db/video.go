@@ -52,3 +52,12 @@ func QueryVideoByUserId(ctx context.Context, userId int64) ([]*Video, error) {
 	}
 	return videos, nil
 }
+
+// CreateVideo creates a new video
+func CreateVideo(ctx context.Context, video *Video) error {
+	if err := DB.WithContext(ctx).Create(video).Error; err != nil {
+		klog.Error("create video fail " + err.Error())
+		return err
+	}
+	return nil
+}

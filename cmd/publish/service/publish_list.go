@@ -23,14 +23,12 @@ func NewPublishListService(ctx context.Context) *PublishListService {
 
 // PublishList implements the PublishServiceImpl interface.
 func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) ([]*publish.Video, error) {
-	// 是否登录
+	// 登录id
 	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
-	var login_id int64
 	if err != nil {
-		login_id = 0
-	} else {
-		login_id = int64(int(claims[constants.IdentityKey].(float64)))
+		return nil, err
 	}
+	loginId := int64(int(claims[constants.IdentityKey].(float64)))
 
 	// 利用用户名查找视频
 	videoData, err := db.QueryVideoByUserId(s.ctx, req.UserId)
@@ -58,7 +56,7 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 	// 视频点赞和用户关注
 	var favoriteSet map[int64]struct{}
 	var followSet map[int64]struct{}
-	if login_id == 0 {
+	if loginId == 0 {
 		favoriteSet = nil
 		followSet = nil
 	} else {
@@ -69,7 +67,7 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 		//获取点赞信息
 		go func() {
 			defer wg.Done()
-			favoriteSet, err = db.MQueryFavoriteByIds(s.ctx, login_id, videoIds)
+			favoriteSet, err = db.MQueryFavoriteByIds(s.ctx, loginId, videoIds)
 			if err != nil {
 				favoriteErr = err
 				return
@@ -79,7 +77,7 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 		//获取关注信息
 		go func() {
 			defer wg.Done()
-			followSet, err = db.MQueryFollowByUserIdAndToUserIds(s.ctx, login_id, userIds)
+			followSet, err = db.MQueryFollowByUserIdAndToUserIds(s.ctx, loginId, userIds)
 			if err != nil {
 				relationErr = err
 				return
@@ -96,6 +94,6 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 	}
 
 	// 封装db数据到response
-	videoListInfo := pack.VideoListInfo(login_id, videoData, userMap, favoriteSet, followSet)
+	videoListInfo := pack.VideoListInfo(loginId, videoData, userMap, favoriteSet, followSet)
 	return videoListInfo, nil
 }
