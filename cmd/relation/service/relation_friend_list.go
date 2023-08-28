@@ -58,7 +58,7 @@ func (s *RelationFriendListService) RelationFriendList(req *relation.DouyinRelat
 			if err != nil {
 				return nil, err
 			}
-			messageMap[friend.UserId] = message[0]
+			messageMap[friend.ToUserId] = message[0]
 		}
 	}
 
