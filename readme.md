@@ -33,7 +33,7 @@ request参数中有token，总感觉哪里怪怪的
 
 使用Find查询时，查询不到数据不会返回错误
 
-int64(int(claims[constants.IdentityKey].(float64)))  这种写法我蚌埠住了
+int64(claims[constants.IdentityKey].(float64))  这种写法我蚌埠住了
 
 你肯定关注了你的偶像，但是你的偶像不一定关注你呀
 

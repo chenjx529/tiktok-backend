@@ -12,6 +12,7 @@ import (
 	"tiktok-backend/kitex_gen/publish/publishservice"
 	"tiktok-backend/pkg/bound"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/jwt"
 	"tiktok-backend/pkg/middleware"
 	"tiktok-backend/pkg/minio"
 	tracer2 "tiktok-backend/pkg/tracer"
@@ -21,6 +22,7 @@ func Init() {
 	tracer2.InitJaeger(constants.PublishServiceName)
 	dal.Init()
 	minio.InitMinio()
+	jwt.InitJwtMiddleware()
 }
 
 func main() {

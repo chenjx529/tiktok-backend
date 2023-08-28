@@ -25,11 +25,11 @@ func NewUserInfoService(ctx context.Context) *UserInfoService {
 // UserInfo get user info
 func (s *UserInfoService) UserInfo(req *user.DouyinUserRequest) (*user.User, error) {
 	// 登录
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	users, err := db.MQueryUsersByIds(s.ctx, []int64{req.UserId})
 	if err != nil {

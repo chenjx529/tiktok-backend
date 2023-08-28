@@ -12,6 +12,7 @@ import (
 	user "tiktok-backend/kitex_gen/user/userservice"
 	"tiktok-backend/pkg/bound"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/jwt"
 	"tiktok-backend/pkg/middleware"
 	tracer2 "tiktok-backend/pkg/tracer"
 )
@@ -19,6 +20,7 @@ import (
 func Init() {
 	tracer2.InitJaeger(constants.UserServiceName)
 	dal.Init()
+	jwt.InitJwtMiddleware()
 }
 
 func main() {

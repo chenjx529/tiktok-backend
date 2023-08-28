@@ -23,11 +23,11 @@ func NewRelationActionService(ctx context.Context) *RelationActionService {
 // actionType=2 取消关注
 func (s *RelationActionService) RelationAction(req *relation.DouyinRelationActionRequest) error {
 	// 登录id
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 
 	// 查找toUsers用户

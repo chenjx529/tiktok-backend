@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"tiktok-backend/pkg/jwt"
 
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/limit"
@@ -20,6 +21,7 @@ import (
 func Init() {
 	tracer2.InitJaeger(constants.FeedServiceName)
 	dal.Init()
+	jwt.InitJwtMiddleware()
 }
 
 func main() {
