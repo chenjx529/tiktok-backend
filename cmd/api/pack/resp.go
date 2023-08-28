@@ -25,6 +25,13 @@ type Video struct {
 	Title         string `json:"title"`          // 视频标题
 }
 
+type Comment struct {
+	Id         int64  `json:"id"`          // 视频评论id
+	User       *User  `json:"user"`        // 评论用户信息
+	Content    string `json:"content"`     // 评论内容
+	CreateDate string `json:"create_date"` // 评论发布日期，格式 mm-dd
+}
+
 type UserRegisterResponse struct {
 	StatusCode int32  `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string `json:"status_msg"`  // 返回状态描述
@@ -54,4 +61,18 @@ type PublishListResponse struct {
 	StatusCode int32    `json:"status_code"` // 状态码，0-成功，其他值-失败
 	StatusMsg  string   `json:"status_msg"`  // 返回状态描述
 	VideoList  []*Video `json:"video_list"`  // 用户发布的视频列表
+}
+
+type CommentActionResponse struct {
+	StatusCode int32  `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string `json:"status_msg"`  // 返回状态描述
+	UserId     int64  `json:"user_id"`     // 用户id
+	Token      string `json:"token"`       // 用户鉴权token,token放在api层
+	CommentId  int64  `json:"comment_id"`  // 评论id
+}
+
+type CommentListResponse struct {
+	StatusCode  int32      `json:"status_code"`  // 状态码，0-成功，其他值-失败
+	StatusMsg   string     `json:"status_msg"`   // 返回状态描述
+	CommentList []*Comment `json:"comment_list"` // 用户发布的视频列表
 }
