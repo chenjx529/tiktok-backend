@@ -30,9 +30,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 	// 是否登录
 	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
 	var login_id int64
-	if err != nil {
-		login_id = 0
-	} else {
+	if err == nil  {
 		login_id = int64(int(claims[constants.IdentityKey].(float64)))  // 这种写法，我是真的想骂人的
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
 	"net/url"
+	"strings"
 	"tiktok-backend/pkg/constants"
 	"time"
 )
@@ -74,14 +75,16 @@ func UploadFile(ctx context.Context, bucketName string, objectName string, reade
 }
 
 // GetFileUrl 从 minio 获取文件Url
-func GetFileUrl(ctx context.Context, bucketName string, fileName string, expires time.Duration) (*url.URL, error) {
+func GetFileUrl(ctx context.Context, bucketName string, fileName string, expires time.Duration) (string, error) {
 	reqParams := make(url.Values)
 	if expires <= 0 {
 		expires = time.Second * 60 * 60 * 24
 	}
-	presignedUrl, err := minioClient.PresignedGetObject(ctx, bucketName, fileName, expires, reqParams)
+
+	fullUrl, err := minioClient.PresignedGetObject(ctx, bucketName, fileName, expires, reqParams)
 	if err != nil {
-		return nil, errors.New("get url fail")
+		return "", errors.New("get url fail")
 	}
-	return presignedUrl, nil
+
+	return strings.Split(fullUrl.String(), "?")[0], nil
 }

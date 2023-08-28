@@ -9,16 +9,18 @@ import (
 	trace "github.com/kitex-contrib/tracer-opentracing"
 	"net"
 	"tiktok-backend/dal"
-	publish "tiktok-backend/kitex_gen/publish/publishservice"
+	"tiktok-backend/kitex_gen/publish/publishservice"
 	"tiktok-backend/pkg/bound"
 	"tiktok-backend/pkg/constants"
 	"tiktok-backend/pkg/middleware"
+	"tiktok-backend/pkg/minio"
 	tracer2 "tiktok-backend/pkg/tracer"
 )
 
 func Init() {
 	tracer2.InitJaeger(constants.PublishServiceName)
 	dal.Init()
+	minio.InitMinio()
 }
 
 func main() {
@@ -35,7 +37,7 @@ func main() {
 		panic(err)
 	}
 	Init()
-	svr := publish.NewServer(new(PublishServiceImpl),
+	svr := publishservice.NewServer(new(PublishServiceImpl),
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: constants.PublishServiceName}), // server name
 		server.WithMiddleware(middleware.CommonMiddleware),                                                // 中间件
 		server.WithMiddleware(middleware.ServerMiddleware),                                                // 中间件

@@ -45,4 +45,11 @@ const (
 
 	// time
 	TimeFormat = "2006-01-02 15:04:05"
+
+	// minio
+	MinioEndpoint        = "119.23.67.36:9000"
+	MinioAccessKeyId     = "root"
+	MinioSecretAccessKey = "12345678"
+	MinioUseSSL          = false
+	MinioVideoBucketName = "tiktok-video"
 )
