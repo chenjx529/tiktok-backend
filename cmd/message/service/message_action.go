@@ -19,11 +19,11 @@ func NewMessageActionService(ctx context.Context) *MessageActionService {
 
 func (s *MessageActionService) MessageAction(req *message.DouyinMessageActionRequest) error {
 	// 登录id
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 新建一条消息记录
 	mesId, err := db.CreateMessage(s.ctx, &db.Message{

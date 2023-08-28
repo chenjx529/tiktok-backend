@@ -20,11 +20,11 @@ func NewMessageChatService(ctx context.Context) *MessageChatService {
 
 func (s *MessageChatService) MessageChat(req *message.DouyinMessageChatRequest) ([]*message.Message, error) {
 	// 登录id
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 查询聊天记录
 	messageList, err := db.QueryMessageByUserId(s.ctx, loginId, req.ToUserId)

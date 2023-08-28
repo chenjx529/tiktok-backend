@@ -31,11 +31,11 @@ func NewPublishActionService(ctx context.Context) *PublishActionService {
 // PublishAction implements the PublishServiceImpl interface.
 func (s *PublishActionService) PublishAction(req *publish.DouyinPublishActionRequest) error {
 	// 登录id
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 上传视频
 	videoData := req.Data

@@ -28,10 +28,10 @@ func NewFeedService(ctx context.Context) *FeedService {
 // 这个函数我们使用了多线程，同时获取is_favorite和is_follow
 func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, error) {
 	// 是否登录
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	var login_id int64
 	if err == nil  {
-		login_id = int64(int(claims[constants.IdentityKey].(float64)))  // 这种写法，我是真的想骂人的
+		login_id = int64(claims[constants.IdentityKey].(float64))  // 这种写法，我是真的想骂人的
 	}
 
 	// 按投稿时间倒序的视频列表，单次最多30个。

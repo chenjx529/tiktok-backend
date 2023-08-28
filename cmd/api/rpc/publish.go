@@ -27,7 +27,7 @@ func initPublishRpc() {
 		client.WithMiddleware(middleware.CommonMiddleware), // 通用中间件
 		client.WithInstanceMW(middleware.ClientMiddleware), // 客户端中间件
 		client.WithMuxConnection(1),                        // 多路复用
-		client.WithRPCTimeout(3*time.Second),               // 设置 rpc 调用超时时间
+		client.WithRPCTimeout(30*time.Second),               // 设置 rpc 调用超时时间
 		client.WithConnectTimeout(50*time.Millisecond),     // 设置 rpc 连接超时时间
 		client.WithFailureRetry(retry.NewFailurePolicy()),  // 重试，默认2次，可以设置重试次数，熔断
 		client.WithSuite(trace.NewDefaultClientSuite()),    // 链路追踪，默认使用 OpenTracing GlobalTracer

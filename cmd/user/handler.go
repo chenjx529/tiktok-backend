@@ -46,7 +46,7 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUser
 		return resp, nil
 	}
 
-	token, err := jwt.CreateTokenAddId(userId)
+	token, err := jwt.CreateToken(userId)
 	if err != nil {
 		resp = pack.BuildUserRegisterResp(err)
 		return resp, nil

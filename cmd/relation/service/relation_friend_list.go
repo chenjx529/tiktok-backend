@@ -21,11 +21,11 @@ func NewRelationFriendListService(ctx context.Context) *RelationFriendListServic
 func (s *RelationFriendListService) RelationFriendList(req *relation.DouyinRelationFriendListRequest) ([]*relation.FriendUser, error) {
 	// 判断登录
 	// 登录id
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 找到自己的好友
 	friends, err := db.QueryFriendByUserId(s.ctx, req.UserId)

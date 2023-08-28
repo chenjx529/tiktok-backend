@@ -6,6 +6,7 @@ import (
 	"tiktok-backend/dal/db"
 	"tiktok-backend/kitex_gen/relation"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/jwt"
 )
 
 type RelationFollowListService struct {
@@ -19,12 +20,12 @@ func NewRelationFollowListService(ctx context.Context) *RelationFollowListServic
 
 // RelationFollowList 获取关注列表
 func (s *RelationFollowListService) RelationFollowList(req *relation.DouyinRelationFollowListRequest) ([]*relation.User, error) {
-	// 登录id  所以这个token是没用的吧
-	//claims, err := jwt.GetclaimsFromTokenStr(req.Token)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	// 登录id
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
+	if err != nil {
+		return nil, err
+	}
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 获取toUserIds
 	follows, err := db.QueryFollowByUserId(s.ctx, req.UserId)
@@ -43,10 +44,10 @@ func (s *RelationFollowListService) RelationFollowList(req *relation.DouyinRelat
 		return nil, err
 	}
 
-	// 获取关注Set
-	followSet := make(map[int64]struct{})
-	for _, follow := range follows {
-		followSet[follow.ToUserId] = constants.BlankStruct{} // 表示当前用户userId关注了ToUserId
+	// 当前login用户时候关注UserId用户的粉丝
+	followSet, err := db.MQueryFollowByUserIdAndToUserIds(s.ctx, loginId, toUserIds)
+	if err != nil {
+		return nil, err
 	}
 
 	userList := pack.BuildFollowList(toUsers, followSet)

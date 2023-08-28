@@ -12,6 +12,7 @@ import (
 	"tiktok-backend/kitex_gen/relation/relationservice"
 	"tiktok-backend/pkg/bound"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/jwt"
 	"tiktok-backend/pkg/middleware"
 	tracer2 "tiktok-backend/pkg/tracer"
 )
@@ -19,6 +20,7 @@ import (
 func Init() {
 	tracer2.InitJaeger(constants.RelationServiceName)
 	dal.Init()
+	jwt.InitJwtMiddleware()
 }
 
 func main() {

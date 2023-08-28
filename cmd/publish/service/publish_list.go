@@ -24,11 +24,11 @@ func NewPublishListService(ctx context.Context) *PublishListService {
 // PublishList implements the PublishServiceImpl interface.
 func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) ([]*publish.Video, error) {
 	// 登录id
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 利用用户名查找视频
 	videoData, err := db.QueryVideoByUserId(s.ctx, req.UserId)

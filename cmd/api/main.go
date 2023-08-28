@@ -19,6 +19,7 @@ import (
 func Init() {
 	tracer.InitJaeger(constants.ApiServiceName)
 	rpc.InitRPC()
+	jwt.InitJwtMiddleware()
 }
 
 func main() {
@@ -26,13 +27,10 @@ func main() {
 	r := server.New(
 		server.WithHostPorts("127.0.0.1"+constants.ApiServicePort),
 		server.WithHandleMethodNotAllowed(true), // 全局处理 HTTP 404 与 405 请求
+		server.WithMaxRequestBodySize(10*1024*1024),
 	)
 
-	authMiddleware, err := jwt.NewJwtMiddleware()
-
-	if err != nil {
-		hlog.Fatal("JWT Error:" + err.Error())
-	}
+	authMiddleware := jwt.GetJwtMiddleware()
 
 	// 默认的 panic 处理函数
 	r.Use(recovery.Recovery(recovery.WithRecoveryHandler(
@@ -57,7 +55,7 @@ func main() {
 
 	publish := douyin.Group("/publish")
 	publish.POST("/action/", handlers.PublishAction) // 视频投稿
-	publish.GET("/list/", handlers.PublishList)       // 发布列表
+	publish.GET("/list/", handlers.PublishList)      // 发布列表
 
 	favorite := douyin.Group("/favorite")
 	favorite.POST("/action/", handlers.FavoriteAction) // 点赞

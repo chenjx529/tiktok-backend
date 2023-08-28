@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"github.com/cloudwego/kitex/pkg/klog"
 	"tiktok-backend/cmd/relation/pack"
 	"tiktok-backend/dal/db"
 	"tiktok-backend/kitex_gen/relation"
@@ -22,11 +21,11 @@ func NewRelationFollowerListService(ctx context.Context) *RelationFollowerListSe
 // RelationFollowerList 获取粉丝列表，你不一定关注粉丝的
 func (s *RelationFollowerListService) RelationFollowerList(req *relation.DouyinRelationFollowerListRequest) ([]*relation.User, error) {
 	// 登录用户的id是loginId
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	loginId := int64(int(claims[constants.IdentityKey].(float64)))
+	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 通过UserId，获取目标人物的粉丝关系followers:   followerid -> UserId
 	followers, err := db.QueryFollowerByToUserId(s.ctx, req.UserId)
@@ -50,8 +49,6 @@ func (s *RelationFollowerListService) RelationFollowerList(req *relation.DouyinR
 	if err != nil {
 		return nil, err
 	}
-
-	klog.Info(len(followerSet))
 
 	userList := pack.BuildFollowList(followerUsers, followerSet)
 	return userList, nil

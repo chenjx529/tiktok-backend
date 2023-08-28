@@ -4,9 +4,13 @@
 
 基于RPC框架**Kitex**、HTTP框架**Hertz**、ORM框架**GORM**的极简版抖音服务端项目
 
-使用**ETCD**进行服务注册、服务发现，**Jarger**进行链路追踪
+使用**ETCD**进行服务注册和服务发现
 
-使用**JWT**鉴权，**MD5**密码加密
+使用**JWT**进行token校验，**MD5**进行密码加密
+
+使用**Jarger**进行链路追踪
+
+使用**Minio**实现视频和图片的对象存储
 
 服务治理：cpu过载保护、重试
 
@@ -29,15 +33,13 @@ request参数中有token，总感觉哪里怪怪的
 
 使用Find查询时，查询不到数据不会返回错误
 
-int64(int(claims[constants.IdentityKey].(float64)))  这种写法我蚌埠住了
+int64(claims[constants.IdentityKey].(float64))  这种写法我蚌埠住了
 
 你肯定关注了你的偶像，但是你的偶像不一定关注你呀
 
 使用空结构体配合map，构成set数据结构：map[int64]struct{}
 
 好友是消息接受方，所以我是消息发送方。这个参数放在userlist中，艹，好混乱啊
-
-请求如果是json数据的话，好像只能使用GetRawData
 
 查询某一个用户的粉丝，这个粉丝的是否被当前登录用户关注，逻辑有点乱呀
 
@@ -52,6 +54,10 @@ string ""
 
 对于params类型的参数（跟在地址？后面的参数）使用c.Query获取；对于body的参数（json）使用c.bind来获取
 
+问题：视频已经上传成功了，但是后续添加mysql出现了错误，虽然不影响业务，总感觉不好，毕竟这个上传的视频算是垃圾吧
+
+问题：怎么对索引进行优化？
+
 ## 三、代码运行
 
 ### 1. 更改配置
@@ -61,7 +67,7 @@ string ""
 ### 2. 建立基础依赖
 
 ```shell
-docker-compose up
+docker-compose up -d
 ```
 
 ### 3. 运行feed微服务
