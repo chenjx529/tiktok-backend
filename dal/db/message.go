@@ -40,10 +40,37 @@ func QueryMessageById(ctx context.Context, userId int64) ([]*Message, error) {
 }
 
 // CreateMessage 新建一条聊天记录
-func CreateMessage(ctx context.Context, mes *Message) (int64, error) {
-	if err := DB.WithContext(ctx).Create(mes).Error; err != nil {
-		klog.Error("create user fail " + err.Error())
-		return 0, err
+// 更新朋友聊天最后一条记录
+func CreateMessage(ctx context.Context, fromUserId int64, toUserId int64, content string) error {
+	mes := &Message{
+		FromUserId: fromUserId,
+		ToUserId:   toUserId,
+		Content:    content,
 	}
-	return int64(mes.ID), nil
+
+	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 新建一条聊天记录
+		if err := DB.WithContext(ctx).Create(mes).Error; err != nil {
+			klog.Error("create user fail " + err.Error())
+			return err
+		}
+
+		// userId -> toUserId
+		if err := tx.Model(&Friend{}).Where("user_id = ? and to_user_id = ?", fromUserId, toUserId).Update("message_id", int64(mes.ID)).Error; err != nil {
+			klog.Error("update friend message_id fail " + err.Error())
+			return err
+		}
+
+		// toUserId -> userId
+		if err := tx.Model(Friend{}).Where("user_id = ? and to_user_id = ?", toUserId, fromUserId).Update("message_id", int64(mes.ID)).Error; err != nil {
+			klog.Error("update friend message_id fail " + err.Error())
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }

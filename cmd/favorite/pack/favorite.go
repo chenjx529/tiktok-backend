@@ -5,7 +5,7 @@ import (
 	"tiktok-backend/kitex_gen/favorite"
 )
 
-func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*favorite.Video {
+func BuildVideoList(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*favorite.Video {
 	videoList := make([]*favorite.Video, 0)
 	for _, video := range videoData {
 		// 视频用户

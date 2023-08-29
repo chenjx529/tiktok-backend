@@ -5,8 +5,8 @@ import (
 	"tiktok-backend/kitex_gen/publish"
 )
 
-// VideoListInfo 将db数据封装成feed.Video数据
-func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*publish.Video {
+// BuildVideoList 将db数据封装成feed.Video数据
+func BuildVideoList(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*publish.Video {
 	videoList := make([]*publish.Video, 0)
 	for _, video := range videoData {
 		// 视频用户

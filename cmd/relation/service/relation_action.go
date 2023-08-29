@@ -29,6 +29,9 @@ func (s *RelationActionService) RelationAction(req *relation.DouyinRelationActio
 	}
 	loginId := int64(claims[constants.IdentityKey].(float64))
 
+	if loginId == req.ToUserId {
+		return errors.New("follow yourself")
+	}
 
 	// 查找toUsers用户
 	toUsers, err := db.MQueryUsersByIds(s.ctx, []int64{req.ToUserId})

@@ -94,6 +94,6 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 	}
 
 	// 封装db数据到response
-	videoListInfo := pack.VideoListInfo(loginId, videoData, userMap, favoriteSet, followSet)
-	return videoListInfo, nil
+	videoList := pack.BuildVideoList(loginId, videoData, userMap, favoriteSet, followSet)
+	return videoList, nil
 }

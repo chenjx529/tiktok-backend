@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"tiktok-backend/dal/db"
 	"tiktok-backend/kitex_gen/message"
 	"tiktok-backend/pkg/constants"
@@ -25,18 +26,17 @@ func (s *MessageActionService) MessageAction(req *message.DouyinMessageActionReq
 	}
 	loginId := int64(claims[constants.IdentityKey].(float64))
 
-	// 新建一条消息记录
-	mesId, err := db.CreateMessage(s.ctx, &db.Message{
-		FromUserId: loginId,
-		ToUserId:   req.ToUserId,
-		Content:    req.Content,
-	})
+	// 先检查有没有这个朋友
+	ok, err := db.QueryFriendShipByUserId(s.ctx, loginId, req.ToUserId)
 	if err != nil {
 		return err
 	}
+	if !ok {
+		return errors.New("no this friend")
+	}
 
-	// 更新朋友关系中的messageId
-	if err := db.UpdateFriendForMessageIdById(s.ctx, loginId, req.ToUserId, mesId); err != nil {
+	// 新建一条消息记录
+	if err := db.CreateMessage(s.ctx, loginId, req.ToUserId, req.Content); err != nil {
 		return err
 	}
 

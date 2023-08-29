@@ -6,12 +6,14 @@ require (
 	github.com/cloudwego/fastpb v0.0.4
 	github.com/cloudwego/hertz v0.6.7
 	github.com/cloudwego/kitex v0.7.0
-	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/hertz-contrib/jwt v1.0.2
 	github.com/kitex-contrib/registry-etcd v0.1.1
 	github.com/kitex-contrib/tracer-opentracing v0.0.3
+	github.com/minio/minio-go/v7 v7.0.62
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
+	github.com/u2takey/ffmpeg-go v0.5.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	google.golang.org/protobuf v1.28.1
 	gorm.io/driver/mysql v1.5.1
@@ -43,7 +45,6 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/pprof v0.0.0-20220608213341-c488b8fa1db3 // indirect
 	github.com/google/uuid v1.3.1 // indirect
@@ -58,7 +59,6 @@ require (
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.62 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/gls v0.0.0-20220109145502-612d0167dce5 // indirect
@@ -76,7 +76,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/u2takey/ffmpeg-go v0.5.0 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
