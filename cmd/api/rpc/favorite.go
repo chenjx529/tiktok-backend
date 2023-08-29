@@ -1,12 +1,15 @@
 package rpc
 
 import (
+	"context"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/retry"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	trace "github.com/kitex-contrib/tracer-opentracing"
+	"tiktok-backend/kitex_gen/favorite"
 	"tiktok-backend/kitex_gen/favorite/favoriteservice"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/errno"
 	"tiktok-backend/pkg/middleware"
 	"time"
 )
@@ -34,4 +37,28 @@ func initFavoriteRPC() {
 		panic(err)
 	}
 	favoriteClient = c
+}
+
+// FavoriteAction implement like and unlike operations
+func FavoriteAction(ctx context.Context, req *favorite.DouyinFavoriteActionRequest) error {
+	resp, err := favoriteClient.FavoriteAction(ctx, req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 0 {
+		return errno.NewErrNo(resp.StatusCode, resp.StatusMsg)
+	}
+	return nil
+}
+
+// FavoriteList get favorite list info
+func FavoriteList(ctx context.Context, req *favorite.DouyinFavoriteListRequest) ([]*favorite.Video, error) {
+	resp, err := favoriteClient.FavoriteList(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 0 {
+		return nil, errno.NewErrNo(resp.StatusCode, resp.StatusMsg)
+	}
+	return resp.VideoList, nil
 }

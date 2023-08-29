@@ -26,8 +26,8 @@ func main() {
 	Init()
 	r := server.New(
 		server.WithHostPorts("127.0.0.1"+constants.ApiServicePort),
-		server.WithHandleMethodNotAllowed(true), // 全局处理 HTTP 404 与 405 请求
-		server.WithMaxRequestBodySize(10*1024*1024),
+		server.WithHandleMethodNotAllowed(true),     // 全局处理 HTTP 404 与 405 请求
+		server.WithMaxRequestBodySize(10*1024*1024), // 请求大小最大是10M
 	)
 
 	authMiddleware := jwt.GetJwtMiddleware()

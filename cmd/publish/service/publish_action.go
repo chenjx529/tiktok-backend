@@ -79,7 +79,7 @@ func (s *PublishActionService) PublishAction(req *publish.DouyinPublishActionReq
 		FavoriteCount: 0,
 		CommentCount:  0,
 		Title:         req.Title,
-	}); err != nil {
+	}, loginId); err != nil {
 		return err
 	}
 

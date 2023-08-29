@@ -67,7 +67,7 @@ func (s *PublishListService) PublishList(req *publish.DouyinPublishListRequest) 
 		//获取点赞信息
 		go func() {
 			defer wg.Done()
-			favoriteSet, err = db.MQueryFavoriteByIds(s.ctx, loginId, videoIds)
+			favoriteSet, err = db.MQueryFavoriteByUserIdAndVideoIds(s.ctx, loginId, videoIds)
 			if err != nil {
 				favoriteErr = err
 				return
