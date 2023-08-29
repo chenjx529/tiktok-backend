@@ -26,11 +26,9 @@ func main() {
 	Init()
 	r := server.New(
 		server.WithHostPorts("127.0.0.1"+constants.ApiServicePort),
-		server.WithHandleMethodNotAllowed(true), // 全局处理 HTTP 404 与 405 请求
-		server.WithMaxRequestBodySize(10*1024*1024),
+		server.WithHandleMethodNotAllowed(true),     // 全局处理 HTTP 404 与 405 请求
+		server.WithMaxRequestBodySize(10*1024*1024), // 请求大小最大是10M
 	)
-
-	authMiddleware := jwt.GetJwtMiddleware()
 
 	// 默认的 panic 处理函数
 	r.Use(recovery.Recovery(recovery.WithRecoveryHandler(
@@ -42,16 +40,13 @@ func main() {
 			})
 		})))
 
-	// 不需要token
-	r.GET("/douyin/feed/", handlers.Feed)                      // 视频流
-	r.POST("/douyin/user/login/", authMiddleware.LoginHandler) // 用户登录
-	r.POST("/douyin/user/register/", handlers.UserRegister)    // 用户注册
-	r.GET("/douyin/comment/list/", handlers.CommentList)       // 视频评论列表
-
 	douyin := r.Group("/douyin")
-	douyin.Use(authMiddleware.MiddlewareFunc())
+	douyin.GET("/feed/", handlers.Feed) // 视频流
 
-	douyin.GET("/user", handlers.UserInfo) // 用户信息
+	user := douyin.Group("/user")
+	user.GET("/", handlers.UserInfo)                          // 用户信息
+	user.POST("/register/", handlers.UserRegister)            // 用户注册
+	user.POST("/login/", jwt.GetJwtMiddleware().LoginHandler) // 用户登录
 
 	publish := douyin.Group("/publish")
 	publish.POST("/action/", handlers.PublishAction) // 视频投稿
@@ -63,6 +58,7 @@ func main() {
 
 	comment := douyin.Group("/comment")
 	comment.POST("/action/", handlers.CommentAction) // 评论
+	comment.GET("/list/", handlers.CommentList)      // 视频评论列表
 
 	relation := douyin.Group("/relation")
 	relation.POST("/action/", handlers.RelationAction)             // 关注

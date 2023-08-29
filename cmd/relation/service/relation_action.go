@@ -29,6 +29,9 @@ func (s *RelationActionService) RelationAction(req *relation.DouyinRelationActio
 	}
 	loginId := int64(claims[constants.IdentityKey].(float64))
 
+	if loginId == req.ToUserId {
+		return errors.New("follow yourself")
+	}
 
 	// 查找toUsers用户
 	toUsers, err := db.MQueryUsersByIds(s.ctx, []int64{req.ToUserId})
@@ -60,7 +63,7 @@ func (s *RelationActionService) RelationAction(req *relation.DouyinRelationActio
 	// 取消关注
 	if req.ActionType == constants.UnFollow {
 
-		// 确保这连个人之前关注过
+		// 确保这个人之前关注过
 		followSet, err := db.MQueryFollowByUserIdAndToUserIds(s.ctx, loginId, []int64{req.ToUserId})
 		if err != nil {
 			return err

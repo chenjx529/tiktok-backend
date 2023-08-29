@@ -19,7 +19,7 @@ func (Friend) TableName() string {
 }
 
 
-// QueryFriendByUserId 根据当前用户userId获取关注用户id
+// QueryFriendByUserId 找到userId的朋友
 func QueryFriendByUserId(ctx context.Context, userId int64) ([]*Friend, error) {
 	res := make([]*Friend, 0)
 	if err := DB.WithContext(ctx).Where("user_id = ?", userId).Find(&res).Error; err != nil {
@@ -27,6 +27,19 @@ func QueryFriendByUserId(ctx context.Context, userId int64) ([]*Friend, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+// QueryFriendShipByUserId userId和toUserId是否存在关系
+func QueryFriendShipByUserId(ctx context.Context, userId int64, toUserId int64) (bool, error) {
+	res := make([]*Friend, 0)
+	if err := DB.WithContext(ctx).Where("user_id = ? and to_user_id = ?", userId, toUserId).Find(&res).Error; err != nil {
+		klog.Error("query friends by id fail " + err.Error())
+		return false, err
+	}
+	if len(res) == 0 {
+		return false, nil
+	}
+	return true, nil
 }
 
 // UpdateFriendForMessageIdById 更新消息记录

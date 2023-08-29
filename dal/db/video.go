@@ -25,8 +25,8 @@ func (v *Video) TableName() string {
 // QueryVideoByLatestTime 通过LatestTime获取视频，倒序前30个
 func QueryVideoByLatestTime(ctx context.Context, latestTime int64) ([]*Video, error) {
 	var videos []*Video
-	updated_time := time.UnixMilli(latestTime)
-	if err := DB.WithContext(ctx).Limit(30).Order("updated_at desc").Where(`updated_at < ?`, updated_time).Find(&videos).Error; err != nil {
+	updatedTime := time.UnixMilli(latestTime)
+	if err := DB.WithContext(ctx).Limit(30).Order("updated_at desc").Where(`updated_at < ?`, updatedTime).Find(&videos).Error; err != nil {
 		klog.Error("QueryVideoByLatestTime find video error " + err.Error())
 		return videos, err
 	}
@@ -54,9 +54,21 @@ func QueryVideoByUserId(ctx context.Context, userId int64) ([]*Video, error) {
 }
 
 // CreateVideo creates a new video
-func CreateVideo(ctx context.Context, video *Video) error {
-	if err := DB.WithContext(ctx).Create(video).Error; err != nil {
-		klog.Error("create video fail " + err.Error())
+// login用户的work_count++
+func CreateVideo(ctx context.Context, video *Video, loginId int64) error {
+	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// login用户的work_count++
+		if err := tx.Model(&User{}).Where("id = ?", loginId).Update("work_count", gorm.Expr("work_count + ?", 1)).Error; err != nil {
+			klog.Error("add user favorite_count fail " + err.Error())
+			return err
+		}
+		// 添加一个视频记录
+		if err := DB.WithContext(ctx).Create(video).Error; err != nil {
+			klog.Error("create video fail " + err.Error())
+			return err
+		}
+		return nil
+	}); err != nil {
 		return err
 	}
 	return nil

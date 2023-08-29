@@ -2,12 +2,11 @@ package pack
 
 import (
 	"tiktok-backend/dal/db"
-	"tiktok-backend/kitex_gen/publish"
+	"tiktok-backend/kitex_gen/favorite"
 )
 
-// BuildVideoList 将db数据封装成feed.Video数据
-func BuildVideoList(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*publish.Video {
-	videoList := make([]*publish.Video, 0)
+func BuildVideoList(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*favorite.Video {
+	videoList := make([]*favorite.Video, 0)
 	for _, video := range videoData {
 		// 视频用户
 		user, _ := userMap[video.UserId]
@@ -32,8 +31,8 @@ func BuildVideoList(loginId int64, videoData []*db.Video, userMap map[int64]*db.
 	return videoList
 }
 
-func userInfo(dbuser *db.User, isFollow bool) *publish.User {
-	return &publish.User{
+func userInfo(dbuser *db.User, isFollow bool) *favorite.User {
+	return &favorite.User{
 		Id:              int64(dbuser.ID),       // 用户id
 		Name:            dbuser.Name,            // 用户名称
 		FollowCount:     dbuser.FollowCount,     // 关注总数
@@ -48,8 +47,8 @@ func userInfo(dbuser *db.User, isFollow bool) *publish.User {
 	}
 }
 
-func videoInfo(dbvideo *db.Video, author *publish.User, isFavorite bool) *publish.Video {
-	return &publish.Video{
+func videoInfo(dbvideo *db.Video, author *favorite.User, isFavorite bool) *favorite.Video {
+	return &favorite.Video{
 		Id:            int64(dbvideo.ID),     // 视频唯一标识
 		Author:        author,                // 视频作者信息
 		PlayUrl:       dbvideo.PlayUrl,       // 视频播放地址

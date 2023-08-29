@@ -29,9 +29,9 @@ func NewFeedService(ctx context.Context) *FeedService {
 func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, error) {
 	// 是否登录
 	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
-	var login_id int64
+	var loginId int64
 	if err == nil  {
-		login_id = int64(claims[constants.IdentityKey].(float64))  // 这种写法，我是真的想骂人的
+		loginId = int64(claims[constants.IdentityKey].(float64)) // 这种写法，我是真的想骂人的
 	}
 
 	// 按投稿时间倒序的视频列表，单次最多30个。
@@ -61,7 +61,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 	// 视频点赞和用户关注
 	var favoriteSet map[int64]struct{}
 	var followSet map[int64]struct{}
-	if login_id == 0 {
+	if loginId == 0 {
 		favoriteSet = nil
 		followSet = nil
 	} else {
@@ -72,7 +72,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		//获取点赞信息
 		go func() {
 			defer wg.Done()
-			favoriteSet, err = db.MQueryFavoriteByIds(s.ctx, login_id, videoIds)
+			favoriteSet, err = db.MQueryFavoriteByUserIdAndVideoIds(s.ctx, loginId, videoIds)
 			if err != nil {
 				favoriteErr = err
 				return
@@ -82,7 +82,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		//获取关注信息
 		go func() {
 			defer wg.Done()
-			followSet, err = db.MQueryFollowByUserIdAndToUserIds(s.ctx, login_id, userIds)
+			followSet, err = db.MQueryFollowByUserIdAndToUserIds(s.ctx, loginId, userIds)
 			if err != nil {
 				relationErr = err
 				return
@@ -98,6 +98,6 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		}
 	}
 
-	videoListInfo, nextTime := pack.VideoListInfo(login_id, videoData, userMap, favoriteSet, followSet)
+	videoListInfo, nextTime := pack.VideoListInfo(loginId, videoData, userMap, favoriteSet, followSet)
 	return videoListInfo, nextTime, nil
 }

@@ -43,6 +43,10 @@ const (
 	Follow   = 1 // 关注
 	UnFollow = 2 //取消关注
 
+	// 点赞
+	Favorite   = 1 // 点赞
+	UnFavorite = 2 // 取消点赞
+
 	// time
 	TimeFormat = "2006-01-02 15:04:05"
 

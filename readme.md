@@ -43,6 +43,8 @@ int64(claims[constants.IdentityKey].(float64))  这种写法我蚌埠住了
 
 查询某一个用户的粉丝，这个粉丝的是否被当前登录用户关注，逻辑有点乱呀
 
+自己不能关注自己
+
 默认赋值
 int 0
 float 0.000000
