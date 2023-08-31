@@ -1,19 +1,22 @@
 package rpc
 
 import (
+	"context"
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/retry"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	trace "github.com/kitex-contrib/tracer-opentracing"
+	"tiktok-backend/kitex_gen/comment"
 	"tiktok-backend/kitex_gen/comment/commentservice"
 	"tiktok-backend/pkg/constants"
+	"tiktok-backend/pkg/errno"
 	"tiktok-backend/pkg/middleware"
 	"time"
 )
 
 var commentClient commentservice.Client
 
-func initCommentRPC() {
+func initCommentRpc() {
 	r, err := etcd.NewEtcdResolver([]string{constants.EtcdAddress}) // 服务注册发现中心
 	if err != nil {
 		panic(err)
@@ -34,4 +37,31 @@ func initCommentRPC() {
 		panic(err)
 	}
 	commentClient = c
+}
+
+// CommentAction upload comment data
+func CommentAction(ctx context.Context, req *comment.DouyinCommentActionRequest) (*comment.Comment, error) {
+	resp, err := commentClient.CommentAction(ctx, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 0 {
+		return nil, errno.NewErrNo(resp.StatusCode, resp.StatusMsg)
+	}
+
+	return resp.Comment, nil
+}
+
+// CommentList get a list of video's comment
+func CommentList(ctx context.Context, req *comment.DouyinCommentListRequest) ([]*comment.Comment, error) {
+	resp, err := commentClient.CommentList(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 0 {
+		return nil, errno.NewErrNo(resp.StatusCode, resp.StatusMsg)
+	}
+	return resp.CommentList, nil
 }
