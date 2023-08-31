@@ -42,7 +42,6 @@ func initCommentRpc() {
 // CommentAction upload comment data
 func CommentAction(ctx context.Context, req *comment.DouyinCommentActionRequest) (*comment.Comment, error) {
 	resp, err := commentClient.CommentAction(ctx, req)
-
 	if err != nil {
 		return nil, err
 	}

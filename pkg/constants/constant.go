@@ -47,6 +47,10 @@ const (
 	Favorite   = 1 // 点赞
 	UnFavorite = 2 // 取消点赞
 
+	// 评论
+	Comment = 1 // 评论
+	UnComment  = 2 // 取消评论
+
 	// time
 	TimeFormat = "2006-01-02 15:04:05"
 

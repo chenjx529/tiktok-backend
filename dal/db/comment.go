@@ -18,21 +18,64 @@ func (Comment) TableName() string {
 	return "comment"
 }
 
-// CommentAction 评论操作
-func CommentAction(ctx context.Context, comment *Comment) (int64, error) {
-	if err := DB.WithContext(ctx).Create(comment).Error; err != nil {
-		klog.Error("create comment fail" + err.Error())
-		return 0, nil
+// CreateComment 添加一条comment记录
+// video的comment_count++
+func CreateComment(ctx context.Context, userId int64, videoId int64, contents string) error {
+	comment := &Comment{UserId: userId, VideoId: videoId, Contents: contents}
+
+	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		// Video的comment_count++
+		if err := tx.Model(&Video{}).Where("id = ?", videoId).Update("comment_count", gorm.Expr("comment_count + ?", 1)).Error; err != nil {
+			klog.Error("add video comment_count fail " + err.Error())
+			return err
+		}
+
+		// 添加一条记录
+		if err := tx.Create(comment).Error; err != nil {
+			klog.Error("create comment record fail " + err.Error())
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
 	}
-	return int64(comment.ID), nil
+
+	return nil
 }
 
-// CommentList 获取评论列表
-func CommentList(ctx context.Context, videoId int64) ([]*Comment, error) {
-	var commentList []*Comment
-	if err := DB.WithContext(ctx).Order("updated_at desc").Where("video_id = ?", videoId).Find(&commentList).Error; err != nil {
+// DeleteComment 删除一条comment记录
+// video的comment_count--
+func DeleteComment(ctx context.Context, commentId int64, videoId int64, contents string) error {
+	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		// Video的comment_count++
+		if err := tx.Model(&Video{}).Where("id = ?", videoId).Update("comment_count", gorm.Expr("comment_count - ?", 1)).Error; err != nil {
+			klog.Error("delete video comment_count fail " + err.Error())
+			return err
+		}
+
+		// 删除一条记录
+		if err := tx.Where("id = ?", commentId).Delete(&Comment{}).Error; err != nil {
+			klog.Error("delete comment record fail " + err.Error())
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// QueryCommentByVideoId 获取评论列表
+func QueryCommentByVideoId(ctx context.Context, videoId int64) ([]*Comment, error) {
+	res := make([]*Comment, 0)
+	if err := DB.WithContext(ctx).Order("updated_at desc").Where("video_id = ?", videoId).Find(&res).Error; err != nil {
 		klog.Error("CommentList find comment failed" + err.Error())
 		return nil, err
 	}
-	return commentList, nil
+	return res, nil
 }
