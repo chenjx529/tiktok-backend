@@ -5,8 +5,8 @@ import (
 	"tiktok-backend/kitex_gen/publish"
 )
 
-// VideoListInfo 将db数据封装成feed.Video数据
-func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteMap map[int64]*db.Favorite, relationMap map[int64]*db.Relation) []*publish.Video {
+// BuildVideoList 将db数据封装成feed.Video数据
+func BuildVideoList(loginId int64, videoData []*db.Video, userMap map[int64]*db.User, favoriteSet map[int64]struct{}, followSet map[int64]struct{}) []*publish.Video {
 	videoList := make([]*publish.Video, 0)
 	for _, video := range videoData {
 		// 视频用户
@@ -16,11 +16,11 @@ func VideoListInfo(loginId int64, videoData []*db.Video, userMap map[int64]*db.U
 		isFollow := false
 		isFavorite := false
 		if loginId != 0 {
-			_, ok := favoriteMap[int64(video.ID)]
+			_, ok := favoriteSet[int64(video.ID)]
 			if ok {
 				isFavorite = true
 			}
-			_, ok = relationMap[video.UserId]
+			_, ok = followSet[video.UserId]
 			if ok {
 				isFollow = true
 			}
@@ -38,12 +38,12 @@ func userInfo(dbuser *db.User, isFollow bool) *publish.User {
 		Name:            dbuser.Name,            // 用户名称
 		FollowCount:     dbuser.FollowCount,     // 关注总数
 		FollowerCount:   dbuser.FollowerCount,   // 粉丝总数
-		Avatar:          dbuser.Avatar,          //用户头像
-		BackgroundImage: dbuser.BackgroundImage, //用户个人页顶部大图
-		Signature:       dbuser.Signature,       //个人简介
-		TotalFavorited:  dbuser.TotalFavorited,  //获赞数量
-		WorkCount:       dbuser.WorkCount,       //作品数量
-		FavoriteCount:   dbuser.FavoriteCount,   //点赞数量
+		Avatar:          dbuser.Avatar,          // 用户头像
+		BackgroundImage: dbuser.BackgroundImage, // 用户个人页顶部大图
+		Signature:       dbuser.Signature,       // 个人简介
+		TotalFavorited:  dbuser.TotalFavorited,  // 获赞数量
+		WorkCount:       dbuser.WorkCount,       // 作品数量
+		FavoriteCount:   dbuser.FavoriteCount,   // 点赞数量
 		IsFollow:        isFollow,               // true-已关注，false-未关注
 	}
 }

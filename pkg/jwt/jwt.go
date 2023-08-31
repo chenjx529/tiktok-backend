@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	jwt2 "github.com/golang-jwt/jwt/v4"
 	"github.com/hertz-contrib/jwt"
 	"net/http"
@@ -15,8 +14,10 @@ import (
 	"time"
 )
 
-func NewJwtMiddleware() (*jwt.HertzJWTMiddleware, error) {
-	return jwt.New(&jwt.HertzJWTMiddleware{
+var jwtMiddleware *jwt.HertzJWTMiddleware
+
+func InitJwtMiddleware() {
+	mw, err := jwt.New(&jwt.HertzJWTMiddleware{
 		Key:        []byte(constants.SecretKey),
 		Timeout:    time.Hour,
 		MaxRefresh: time.Hour,
@@ -38,7 +39,7 @@ func NewJwtMiddleware() (*jwt.HertzJWTMiddleware, error) {
 		},
 		//IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} { // 在登录成功后的每次请求中，用于设置从 token 提取用户信息的函数,存入请求上下文当中以备后续使用
 		//	claims := jwt.ExtractClaims(ctx, c)
-		//	return int64(int(claims[constants.IdentityKey].(float64))) // 在请求上下文中保存 id
+		//	return int64(claims[constants.IdentityKey].(float64)) // 在请求上下文中保存 id
 		//},
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, tokenStr string, expire time.Time) { // 设置登录返回消息
 			token, err := jwt2.Parse(
@@ -65,61 +66,64 @@ func NewJwtMiddleware() (*jwt.HertzJWTMiddleware, error) {
 		},
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) { // 设置 jwt 授权失败后的响应函数，message从 HTTPStatusMessageFunc 来
 			c.JSON(code, map[string]interface{}{
-				"status_code":    errno.AuthorizationFailedErrCode,
-				"status_msg": message,
+				"status_code": errno.AuthorizationFailedErrCode,
+				"status_msg":  message,
 			})
 		},
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) { // 配合 HertzJWTMiddleware.LoginHandler 使用，登录时触发，用于认证用户的登录信息。
-			var loginVar user.DouyinUserLoginRequest
-			if err := c.Bind(&loginVar); err != nil {
+			//var loginVar user.DouyinUserLoginRequest
+			//if err := c.Bind(&loginVar); err != nil {
+			//	return "", jwt.ErrMissingLoginValues
+			//}
+
+			userName := c.Query("username")
+			passWord := c.Query("password")
+
+			if len(userName) == 0 || len(passWord) == 0 {
 				return "", jwt.ErrMissingLoginValues
 			}
 
-			if len(loginVar.Username) == 0 || len(loginVar.Password) == 0 {
-				return "", jwt.ErrMissingLoginValues
-			}
-
-			return rpc.UserLogin(context.Background(), &loginVar)
+			return rpc.UserLogin(context.Background(), &user.DouyinUserLoginRequest{
+				Username: userName,
+				Password: passWord,
+			})
 		},
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
 	})
-}
-
-func CreateTokenAddId(uid int64) (string, error) {
-
-	JwtMiddleware, err := NewJwtMiddleware()
 
 	if err != nil {
-		hlog.Fatal("JWT Error:" + err.Error())
+		panic("JWT Error:" + err.Error())
 	}
 
-	token := jwt2.New(jwt2.GetSigningMethod(JwtMiddleware.SigningAlgorithm))
+	jwtMiddleware = mw
+}
+
+func CreateToken(uid int64) (string, error) {
+	token := jwt2.New(jwt2.GetSigningMethod(jwtMiddleware.SigningAlgorithm))
 	claims := token.Claims.(jwt2.MapClaims)
 
-	expire := JwtMiddleware.TimeFunc().UTC().Add(JwtMiddleware.Timeout)
+	expire := jwtMiddleware.TimeFunc().UTC().Add(jwtMiddleware.Timeout)
 	claims["exp"] = expire.Unix()
-	claims["orig_iat"] = JwtMiddleware.TimeFunc().Unix()
+	claims["orig_iat"] = jwtMiddleware.TimeFunc().Unix()
 	claims[constants.IdentityKey] = uid
 
-	tokenString, err := token.SignedString(JwtMiddleware.Key)
+	tokenString, err := token.SignedString(jwtMiddleware.Key)
 	if err != nil {
 		return "", err
 	}
 	return tokenString, nil
 }
 
-func GetclaimsFromTokenStr(tokenStr string) (map[string]interface{}, error) {
-	JwtMiddleware, err := NewJwtMiddleware()
-
-	if err != nil {
-		hlog.Fatal("JWT Error:" + err.Error())
-	}
-
-	token, err := JwtMiddleware.ParseTokenString(tokenStr)
+func GetClaimsFromTokenStr(tokenStr string) (map[string]interface{}, error) {
+	token, err := jwtMiddleware.ParseTokenString(tokenStr)
 	if err != nil {
 		return nil, err
 	}
 	return jwt.ExtractClaimsFromToken(token), nil
+}
+
+func GetJwtMiddleware() *jwt.HertzJWTMiddleware {
+	return jwtMiddleware
 }

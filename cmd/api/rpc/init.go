@@ -5,4 +5,8 @@ func InitRPC() {
 	initUserRpc()
 	initFeedRPC()
 	initPublishRpc()
+	initRelationRpc()
+	initMessageRpc()
+	initCommentRPC()
+	initFavoriteRPC()
 }

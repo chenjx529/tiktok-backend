@@ -30,7 +30,7 @@ message User {
 message douyin_favorite_action_request {
   string token = 1; // 用户鉴权token
   int64 video_id = 2; // 视频id
-  int32 status_code = 3; // 1-点赞，2-取消点赞
+  int32 action_type = 3; // 1-点赞，2-取消点赞
 }
 
 message douyin_favorite_action_response {

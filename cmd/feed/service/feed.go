@@ -28,12 +28,10 @@ func NewFeedService(ctx context.Context) *FeedService {
 // 这个函数我们使用了多线程，同时获取is_favorite和is_follow
 func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, error) {
 	// 是否登录
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
-	var login_id int64
-	if err != nil {
-		login_id = 0
-	} else {
-		login_id = int64(int(claims[constants.IdentityKey].(float64)))  // 这种写法，我是真的想骂人的
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
+	var loginId int64
+	if err == nil  {
+		loginId = int64(claims[constants.IdentityKey].(float64)) // 这种写法，我是真的想骂人的
 	}
 
 	// 按投稿时间倒序的视频列表，单次最多30个。
@@ -61,11 +59,11 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 	}
 
 	// 视频点赞和用户关注
-	var favoriteMap map[int64]*db.Favorite
-	var relationMap map[int64]*db.Relation
-	if login_id == 0 {
-		favoriteMap = nil
-		relationMap = nil
+	var favoriteSet map[int64]struct{}
+	var followSet map[int64]struct{}
+	if loginId == 0 {
+		favoriteSet = nil
+		followSet = nil
 	} else {
 		var wg sync.WaitGroup
 		wg.Add(2)
@@ -74,7 +72,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		//获取点赞信息
 		go func() {
 			defer wg.Done()
-			favoriteMap, err = db.MQueryFavoriteByIds(s.ctx, login_id, videoIds)
+			favoriteSet, err = db.MQueryFavoriteByUserIdAndVideoIds(s.ctx, loginId, videoIds)
 			if err != nil {
 				favoriteErr = err
 				return
@@ -84,7 +82,7 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		//获取关注信息
 		go func() {
 			defer wg.Done()
-			relationMap, err = db.MQueryRelationByIds(s.ctx, login_id, userIds)
+			followSet, err = db.MQueryFollowByUserIdAndToUserIds(s.ctx, loginId, userIds)
 			if err != nil {
 				relationErr = err
 				return
@@ -100,6 +98,6 @@ func (s *FeedService) Feed(req *feed.DouyinFeedRequest) ([]*feed.Video, int64, e
 		}
 	}
 
-	videoListInfo, nextTime := pack.VideoListInfo(login_id, videoData, userMap, favoriteMap, relationMap)
+	videoListInfo, nextTime := pack.VideoListInfo(loginId, videoData, userMap, favoriteSet, followSet)
 	return videoListInfo, nextTime, nil
 }
