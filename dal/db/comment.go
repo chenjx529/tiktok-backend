@@ -20,19 +20,17 @@ func (Comment) TableName() string {
 
 // CreateComment 添加一条comment记录
 // video的comment_count++
-func CreateComment(ctx context.Context, userId int64, videoId int64, contents string) error {
-	comment := &Comment{UserId: userId, VideoId: videoId, Contents: contents}
-
+func CreateComment(ctx context.Context, com *Comment) error {
 	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		// Video的comment_count++
-		if err := tx.Model(&Video{}).Where("id = ?", videoId).Update("comment_count", gorm.Expr("comment_count + ?", 1)).Error; err != nil {
+		if err := tx.Model(&Video{}).Where("id = ?", com.VideoId).Update("comment_count", gorm.Expr("comment_count + ?", 1)).Error; err != nil {
 			klog.Error("add video comment_count fail " + err.Error())
 			return err
 		}
 
 		// 添加一条记录
-		if err := tx.Create(comment).Error; err != nil {
+		if err := tx.Create(com).Error; err != nil {
 			klog.Error("create comment record fail " + err.Error())
 			return err
 		}
@@ -47,15 +45,19 @@ func CreateComment(ctx context.Context, userId int64, videoId int64, contents st
 
 // DeleteComment 删除一条comment记录
 // video的comment_count--
-func DeleteComment(ctx context.Context, commentId int64, videoId int64, contents string) error {
+func DeleteComment(ctx context.Context, commentId int64, videoId int64) (*Comment, error) {
+	var com *Comment
 	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-
+		// 获取comment
+		if err := tx.Where("id = ?", commentId).First(&com).Error; err != nil{
+			klog.Error("find comment fail ")
+			return err
+		}
 		// Video的comment_count++
 		if err := tx.Model(&Video{}).Where("id = ?", videoId).Update("comment_count", gorm.Expr("comment_count - ?", 1)).Error; err != nil {
 			klog.Error("delete video comment_count fail " + err.Error())
 			return err
 		}
-
 		// 删除一条记录
 		if err := tx.Where("id = ?", commentId).Delete(&Comment{}).Error; err != nil {
 			klog.Error("delete comment record fail " + err.Error())
@@ -64,10 +66,10 @@ func DeleteComment(ctx context.Context, commentId int64, videoId int64, contents
 
 		return nil
 	}); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return com, nil
 }
 
 // QueryCommentByVideoId 获取评论列表

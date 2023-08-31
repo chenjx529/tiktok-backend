@@ -22,15 +22,16 @@ func BuildCommentList(loginId int64, commentData []*db.Comment, userMap map[int6
 		}
 
 		// 格式化
-		commentList = append(commentList, buildCommentInfo(com, buildCommentUserInfo(user, isFollow)))
+		commentList = append(commentList, BuildCommentInfo(com, user, isFollow))
 	}
 	return commentList
 }
 
-func buildCommentInfo(com *db.Comment, user *comment.User) *comment.Comment {
+func BuildCommentInfo(com *db.Comment, dbuser *db.User, isFollow bool) *comment.Comment {
+
 	return &comment.Comment{
 		Id:         int64(com.ID),
-		User:       user,
+		User:       buildCommentUserInfo(dbuser, isFollow),
 		Content:    com.Contents,
 		CreateDate: com.CreatedAt.Format(constants.TimeFormat),
 	}
