@@ -7,12 +7,12 @@ import (
 	"tiktok-backend/pkg/errno"
 )
 
-func SendCommentActionResponse(c *app.RequestContext, err error, commentId int64) {
+func SendCommentActionResponse(c *app.RequestContext, err error, com *comment.Comment) {
 	Err := errno.ConvertErr(err)
 	c.JSON(http.StatusOK, CommentActionResponse{
 		StatusCode: Err.ErrCode,
 		StatusMsg:  Err.ErrMsg,
-		CommentId:  commentId,
+		Comment:  buildCommentInfo(com, buildCommentUserInfo(com.User)),
 	})
 }
 
@@ -28,30 +28,33 @@ func SendCommentListResponse(c *app.RequestContext, err error, commentList []*co
 // buildCommentListInfo pack comment list info
 func buildCommentList(commentData []*comment.Comment) []*Comment {
 	commentList := make([]*Comment, 0)
-	for _, comment := range commentData {
-		commentList = append(commentList, buildCommentInfo(comment))
+	for _, v := range commentData {
+		commentList = append(commentList, buildCommentInfo(v, buildCommentUserInfo(v.User)))
 	}
 	return commentList
 }
 
-func buildCommentInfo(kitex_comment *comment.Comment) *Comment {
-	user := &User{
-		Id:              kitex_comment.User.Id,
-		Name:            kitex_comment.User.Name,
-		FollowCount:     kitex_comment.User.FollowCount,
-		FollowerCount:   kitex_comment.User.FollowerCount,
-		IsFollow:        kitex_comment.User.IsFollow,
-		Avatar:          kitex_comment.User.Avatar,
-		BackgroundImage: kitex_comment.User.BackgroundImage,
-		Signature:       kitex_comment.User.Signature,
-		TotalFavorited:  kitex_comment.User.TotalFavorited,
-		WorkCount:       kitex_comment.User.WorkCount,
-		FavoriteCount:   kitex_comment.User.FavoriteCount,
-	}
+func buildCommentInfo(kitex_comment *comment.Comment, user *User) *Comment {
 	return &Comment{
 		Id:         kitex_comment.Id,
 		User:       user,
 		Content:    kitex_comment.Content,
 		CreateDate: kitex_comment.CreateDate,
+	}
+}
+
+func buildCommentUserInfo(kitex_user *comment.User) *User {
+	return &User{
+		Id:              kitex_user.Id,              // 用户id
+		Name:            kitex_user.Name,            // 用户名称
+		FollowCount:     kitex_user.FollowCount,     // 关注总数
+		FollowerCount:   kitex_user.FollowerCount,   // 粉丝总数
+		Avatar:          kitex_user.Avatar,          //用户头像
+		BackgroundImage: kitex_user.BackgroundImage, //用户个人页顶部大图
+		Signature:       kitex_user.Signature,       //个人简介
+		TotalFavorited:  kitex_user.TotalFavorited,  //获赞数量
+		WorkCount:       kitex_user.WorkCount,       //作品数量
+		FavoriteCount:   kitex_user.FavoriteCount,   //点赞数量
+		IsFollow:        kitex_user.IsFollow,        // true-已关注，false-未关注
 	}
 }

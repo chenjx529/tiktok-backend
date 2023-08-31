@@ -41,7 +41,7 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 
 	if err = rpc.FavoriteAction(context.Background(), &favorite.DouyinFavoriteActionRequest{
 		Token:      tokenStr,
-		VideoId:   videoId,
+		VideoId:    videoId,
 		ActionType: int32(actionType),
 	}); err != nil {
 		pack.SendFavoriteActionResponse(c, err)

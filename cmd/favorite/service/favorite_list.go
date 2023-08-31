@@ -62,10 +62,7 @@ func (s *FavoriteListService) FavoriteList(req *favorite.DouyinFavoriteListReque
 	// 视频点赞和用户关注
 	var favoriteSet map[int64]struct{}
 	var followSet map[int64]struct{}
-	if loginId == 0 {
-		favoriteSet = nil
-		followSet = nil
-	} else {
+	if loginId != 0 {
 		var wg sync.WaitGroup
 		wg.Add(2)
 		var favoriteErr, relationErr error

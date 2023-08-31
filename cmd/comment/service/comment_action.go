@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"errors"
+	"sync"
+	"tiktok-backend/cmd/comment/pack"
 	"tiktok-backend/dal/db"
 	"tiktok-backend/kitex_gen/comment"
 	"tiktok-backend/pkg/constants"
@@ -19,22 +22,98 @@ func NewCommentActionService(ctx context.Context) *CommentActionService {
 	}
 }
 
-func (s *CommentActionService) CommentAction(req *comment.DouyinCommentActionRequest) (int64, error) {
-	// 是否登录
-	claims, err := jwt.GetclaimsFromTokenStr(req.Token)
-	var login_id int64
+func (s *CommentActionService) CommentAction(req *comment.DouyinCommentActionRequest) (*comment.Comment, error) {
+	// 登录id
+	claims, err := jwt.GetClaimsFromTokenStr(req.Token)
 	if err != nil {
-		login_id = 0
-	} else {
-		login_id = int64(int(claims[constants.IdentityKey].(float64))) // 这种写法，我是真的想骂人的
+		return nil, err
+	}
+	loginId := int64(claims[constants.IdentityKey].(float64))
+
+	// 添加评论
+	if req.ActionType == 1 {
+
+		commentData := &db.Comment{
+			UserId:   loginId,
+			VideoId:  req.VideoId,
+			Contents: req.CommentText,
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var user *db.User
+		var commentErr, userErr error
+
+		// 添加记录
+		go func() {
+			defer wg.Done()
+			if err := db.CreateComment(s.ctx, commentData); err != nil {
+				commentErr = err
+				return
+			}
+		}()
+
+		//获取当前用户信息
+		go func() {
+			defer wg.Done()
+			users, err := db.MQueryUsersByIds(s.ctx, []int64{loginId})
+			if err != nil {
+				userErr = err
+				return
+			}
+			user = users[0]
+		}()
+
+		wg.Wait()
+		if commentErr != nil {
+			return nil, commentErr
+		}
+		if userErr != nil {
+			return nil, userErr
+		}
+
+		return pack.BuildCommentInfo(commentData, user, false), nil
+
 	}
 
-	// 进行评论操作
-	commentId, err := db.CommentAction(s.ctx, &db.Comment{
-		UserId:   login_id,
-		VideoId:  req.VideoId,
-		Contents: req.CommentText,
-	})
+	// 删除评论
+	if req.ActionType == 2 {
+		var wg sync.WaitGroup
+		wg.Add(2)
+		var user *db.User
+		var commentData *db.Comment
+		var commentErr, userErr error
 
-	return commentId, nil
+		// 删除评论
+		go func() {
+			defer wg.Done()
+			if commentData, err = db.DeleteComment(s.ctx, req.CommentId, req.VideoId); err != nil {
+				commentErr = err
+				return
+			}
+		}()
+
+		// 获取当前用户信息
+		go func() {
+			defer wg.Done()
+			users, err := db.MQueryUsersByIds(s.ctx, []int64{loginId})
+			if err != nil {
+				userErr = err
+				return
+			}
+			user = users[0]
+		}()
+
+		wg.Wait()
+		if commentErr != nil {
+			return nil, commentErr
+		}
+		if userErr != nil {
+			return nil, userErr
+		}
+
+		return pack.BuildCommentInfo(commentData, user, false), nil
+	}
+
+	return nil, errors.New("ActionType error")
 }

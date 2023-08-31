@@ -15,19 +15,19 @@ type CommentServiceImpl struct{}
 func (s *CommentServiceImpl) CommentAction(ctx context.Context, req *comment.DouyinCommentActionRequest) (resp *comment.DouyinCommentActionResponse, err error) {
 	resp = new(comment.DouyinCommentActionResponse)
 
-	if len(req.Token) == 0 {
+	if len(req.Token) == 0 || req.VideoId == 0 {
 		resp = pack.BuildCommentActionResp(errno.ParamErr)
 		return resp, nil
 	}
 
-	commentId, err := service.NewCommentActionService(ctx).CommentAction(req)
+	commentData, err := service.NewCommentActionService(ctx).CommentAction(req)
 	if err != nil {
 		resp = pack.BuildCommentActionResp(err)
 		return resp, nil
 	}
 
 	resp = pack.BuildCommentActionResp(errno.Success)
-	resp.Comment.Id = commentId
+	resp.Comment = commentData
 	return resp, nil
 }
 

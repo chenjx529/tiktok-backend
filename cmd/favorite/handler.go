@@ -15,7 +15,7 @@ type FavoriteServiceImpl struct{}
 func (s *FavoriteServiceImpl) FavoriteAction(ctx context.Context, req *favorite.DouyinFavoriteActionRequest) (resp *favorite.DouyinFavoriteActionResponse, err error) {
 	resp = new(favorite.DouyinFavoriteActionResponse)
 
-	if len(req.Token) == 0 || req.VideoId == 0 || req.ActionType == 0 {
+	if len(req.Token) == 0 || req.VideoId == 0 {
 		resp = pack.BuildFavoriteActionResp(errno.ParamErr)
 		return resp, nil
 	}
