@@ -17,7 +17,7 @@ import (
 // 难点3：当前用户时候关注  is_follow
 func Feed(ctx context.Context, c *app.RequestContext) {
 	token := c.DefaultQuery("token", "")
-	latestTimeStr := c.DefaultQuery("latest_time", "")
+	latestTimeStr := c.DefaultQuery("latest_time", "0")
 	latestTime, err := strconv.ParseInt(latestTimeStr, 10, 64)
 	if latestTime == 0 {
 		latestTime = time.Now().UnixMilli()
