@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"gorm.io/gorm"
+	"time"
 )
 
 // Message Gorm Data Structures
@@ -12,6 +13,7 @@ type Message struct {
 	ToUserId   int64  `gorm:"column:to_user_id;not null;index:idx_touserid"`     // 该消息接收者的id
 	FromUserId int64  `gorm:"column:from_user_id;not null;index:idx_fromuserid"` // 该消息发送者的id
 	Content    string `grom:"column:contents;type:varchar(255);not null"`        // 消息内容
+	CreateTime int64  `grom:"column:create_time;not null"`
 }
 
 func (Message) TableName() string {
@@ -19,10 +21,10 @@ func (Message) TableName() string {
 }
 
 // QueryMessageByUserId 根据当前用户userId获取关注用户id
-func QueryMessageByUserId(ctx context.Context, fromUserId int64, toUserId int64) ([]*Message, error) {
+func QueryMessageByUserId(ctx context.Context, fromUserId int64, toUserId int64, preTime int64) ([]*Message, error) {
 	res := make([]*Message, 0)
-	querySql := "(to_user_id = ? and from_user_id = ?) or (to_user_id = ? and from_user_id = ?)"
-	if err := DB.WithContext(ctx).Order("created_at desc").Where(querySql, toUserId, fromUserId, fromUserId, toUserId).Find(&res).Error; err != nil {
+	querySql := "((to_user_id = ? and from_user_id = ?) or (to_user_id = ? and from_user_id = ?)) and create_time > ?"
+	if err := DB.WithContext(ctx).Order("created_at desc").Where(querySql, toUserId, fromUserId, fromUserId, toUserId, preTime).Find(&res).Error; err != nil {
 		klog.Error("query Message by userId fail " + err.Error())
 		return nil, err
 	}
@@ -46,6 +48,7 @@ func CreateMessage(ctx context.Context, fromUserId int64, toUserId int64, conten
 		FromUserId: fromUserId,
 		ToUserId:   toUserId,
 		Content:    content,
+		CreateTime: time.Now().UnixMilli(),
 	}
 
 	if err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {

@@ -57,7 +57,15 @@ func MessageAction(ctx context.Context, c *app.RequestContext) {
 func MessageChat(ctx context.Context, c *app.RequestContext) {
 	tokenStr := c.Query("token")
 	toUserIdStr := c.Query("to_user_id")
-	preMsgTimeStr := c.DefaultQuery("latest_time", strconv.Itoa(int(time.Now().UnixMilli())))
+	preMsgTimeStr := c.DefaultQuery("pre_msg_time", "0")
+	preMsgTime, err := strconv.ParseInt(preMsgTimeStr, 10, 64)
+	if err != nil {
+		pack.SendMessageChatResponse(c, err, nil)
+		return
+	}
+	if preMsgTime == 0 {
+		preMsgTime = time.Now().UnixMilli()
+	}
 
 	if len(tokenStr) == 0 {
 		pack.SendMessageChatResponse(c, errno.ParamErr, nil)
@@ -65,12 +73,6 @@ func MessageChat(ctx context.Context, c *app.RequestContext) {
 	}
 
 	toUserId, err := strconv.ParseInt(toUserIdStr, 10, 64)
-	if err != nil {
-		pack.SendMessageChatResponse(c, err, nil)
-		return
-	}
-
-	preMsgTime, err := strconv.ParseInt(preMsgTimeStr, 10, 64)
 	if err != nil {
 		pack.SendMessageChatResponse(c, err, nil)
 		return

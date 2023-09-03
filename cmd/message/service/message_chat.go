@@ -27,7 +27,7 @@ func (s *MessageChatService) MessageChat(req *message.DouyinMessageChatRequest) 
 	loginId := int64(claims[constants.IdentityKey].(float64))
 
 	// 查询聊天记录
-	messageList, err := db.QueryMessageByUserId(s.ctx, loginId, req.ToUserId)
+	messageList, err := db.QueryMessageByUserId(s.ctx, loginId, req.ToUserId, req.PreMsgTime)
 	if err != nil {
 		return nil, err
 	}

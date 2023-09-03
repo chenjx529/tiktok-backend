@@ -17,15 +17,20 @@ import (
 // 难点3：当前用户时候关注  is_follow
 func Feed(ctx context.Context, c *app.RequestContext) {
 	token := c.DefaultQuery("token", "")
-	latestTimeStr := c.DefaultQuery("latest_time", strconv.Itoa(int(time.Now().UnixMilli())))
+	latestTimeStr := c.DefaultQuery("latest_time", "")
 	latestTime, err := strconv.ParseInt(latestTimeStr, 10, 64)
+	if latestTime == 0 {
+		latestTime = time.Now().UnixMilli()
+	}
 	if err != nil {
 		pack.SendFeedResponse(c, err, nil, 0)
 		return
 	}
 
-	req := &feed.DouyinFeedRequest{LatestTime: latestTime, Token: token}
-	video, nextTime, err := rpc.Feed(context.Background(), req)
+	video, nextTime, err := rpc.Feed(context.Background(), &feed.DouyinFeedRequest{
+		LatestTime: latestTime,
+		Token: token,
+	})
 	if err != nil {
 		pack.SendFeedResponse(c, err,nil, 0)
 		return
