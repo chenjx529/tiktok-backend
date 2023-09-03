@@ -38,7 +38,15 @@ token校验：JWT
 | relation | /douyin/relation/action/ - 关系操作 <br/> /douyin/relatioin/follow/list/ - 用户关注列表 <br/> /douyin/relation/follower/list/ - 用户粉丝列表 <br/> /douyin/relation/friend/list/ - 用户好友列表 |
 | message  | /douyin/message/chat/ - 聊天记录 <br/> /douyin/message/action/ - 消息操作                                                                                                         |
 
-## 二、遇到的问题
+## 二、架构设计
+
+![tiktok](assets/tiktok.jpg)
+
+## 三、数据库设计
+
+![mysql-tiktok](assets/mysql-tiktok.jpg)
+
+## 四、遇到的问题
 
 proto3 由于字段为默认值（比如0值、空串、false等），导致输出json对应字段被隐藏
 
@@ -71,11 +79,15 @@ string ""
 
 对于params类型的参数（跟在地址？后面的参数）使用c.Query获取；对于body的参数（json）使用c.bind来获取
 
+定位项目中的慢sql，然后针对性的设计redis
+
+微服务太微了，个人感觉relation模块和message模块其实可以合并
+
 问题：视频已经上传成功了，但是后续添加mysql出现了错误，虽然不影响业务，总感觉不好，毕竟这个上传的视频算是垃圾吧
 
 问题：怎么对索引进行优化？
 
-## 三、代码运行
+## 五、代码运行
 
 ### 1. 更改配置
 
