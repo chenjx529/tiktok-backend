@@ -18,7 +18,7 @@ func SendMessageActionResponse(c *app.RequestContext, err error) {
 func SendMessageChatResponse(c *app.RequestContext, err error, messageList []*message.Message) {
 	Err := errno.ConvertErr(err)
 	c.JSON(http.StatusOK, MessageChatResponse{
-		StatusCode:  Err.ErrCode,
+		StatusCode: Err.ErrCode,
 		StatusMsg:   Err.ErrMsg,
 		MessageList: buildMessageList(messageList),
 	})
